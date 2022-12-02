@@ -1,12 +1,6 @@
 ﻿using common;
-using day1;
 using day2;
 using FluentAssertions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace tests
@@ -21,6 +15,8 @@ namespace tests
             sut.Strategies[0].Part1YouPlay.Should().Be(Strategy.Play.Paper);
             sut.Strategies[0].Part1Result.Should().Be(Strategy.Result.Win);
             sut.Strategies[0].Part1ScoreResult.Should().Be(8);
+            sut.Strategies[0].Part1ScoreResultAlt.Should().Be(8);
+            sut.Strategies[0].Part1ScoreResultAlt2.Should().Be(8);
             sut.Strategies[0].Part2RequiredResult.Should().Be(Strategy.Result.Draw);
             sut.Strategies[0].Part2ScoreResult.Should().Be(4);
 
@@ -28,6 +24,8 @@ namespace tests
             sut.Strategies[1].Part1YouPlay.Should().Be(Strategy.Play.Rock);
             sut.Strategies[1].Part1Result.Should().Be(Strategy.Result.Lose);
             sut.Strategies[1].Part1ScoreResult.Should().Be(1);
+            sut.Strategies[1].Part1ScoreResultAlt.Should().Be(1);
+            sut.Strategies[1].Part1ScoreResultAlt2.Should().Be(1);
             sut.Strategies[1].Part2RequiredResult.Should().Be(Strategy.Result.Lose);
             sut.Strategies[1].Part2ScoreResult.Should().Be(1);
 
@@ -35,6 +33,8 @@ namespace tests
             sut.Strategies[2].Part1YouPlay.Should().Be(Strategy.Play.Scissors);
             sut.Strategies[2].Part1Result.Should().Be(Strategy.Result.Draw);
             sut.Strategies[2].Part1ScoreResult.Should().Be(6);
+            sut.Strategies[2].Part1ScoreResultAlt.Should().Be(6);
+            sut.Strategies[2].Part1ScoreResultAlt2.Should().Be(6);
             sut.Strategies[2].Part2RequiredResult.Should().Be(Strategy.Result.Win);
             sut.Strategies[2].Part2ScoreResult.Should().Be(7);
         }

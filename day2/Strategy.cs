@@ -31,6 +31,39 @@ namespace day2
                 _ => Result.Draw
             };
 
+        /// <summary>
+        /// An experiment to see if checking the equal case as a shortcut would
+        /// be faster.  It's not, at least not with raising an unreachable
+        /// exception as an exhaustiveness guard.
+        /// </summary>
+        public static Result GetResultAlt(Play TheyPlay, Play YouPlay) =>
+            TheyPlay == YouPlay ? Result.Draw :
+                 (TheyPlay, YouPlay) switch
+                 {
+                     (Play.Scissors, Play.Rock) => Result.Win,
+                     (Play.Scissors, Play.Paper) => Result.Lose,
+                     (Play.Rock, Play.Paper) => Result.Win,
+                     (Play.Rock, Play.Scissors) => Result.Lose,
+                     (Play.Paper, Play.Scissors) => Result.Win,
+                     (Play.Paper, Play.Rock) => Result.Lose,
+                     _ => throw new UnreachableException()
+                 };
+
+        /// <summary>
+        /// Another experiment - also not faster
+        /// </summary>
+        public static Result GetResultAlt2(Play TheyPlay, Play YouPlay) =>
+            (TheyPlay, YouPlay) switch
+            {
+                (var t, var y) when t == y => Result.Draw,
+                (Play.Scissors, Play.Rock) => Result.Win,
+                (Play.Scissors, Play.Paper) => Result.Lose,
+                (Play.Rock, Play.Paper) => Result.Win,
+                (Play.Rock, Play.Scissors) => Result.Lose,
+                (Play.Paper, Play.Scissors) => Result.Win,
+                (Play.Paper, Play.Rock) => Result.Lose
+            };
+
         public static int GetScore(Result result, Play youPlayed) =>
             result switch {
                 Result.Win => 6,
@@ -46,8 +79,14 @@ namespace day2
             };
 
         public Result Part1Result => GetResult(TheyPlay, Part1YouPlay);
+        public Result Part1ResultAlt => GetResultAlt(TheyPlay, Part1YouPlay);
+        public Result Part1ResultAlt2 => GetResultAlt2(TheyPlay, Part1YouPlay);
+
         public int Part1ScoreResult => GetScore(Part1Result, Part1YouPlay);
+        public int Part1ScoreResultAlt => GetScore(Part1ResultAlt, Part1YouPlay);
+        public int Part1ScoreResultAlt2 => GetScore(Part1ResultAlt2, Part1YouPlay);
         public int Part2ScoreResult => GetScore(Part2RequiredResult, Part2YouPlay);
+
 
         public static Strategy Parse(string strategyText)
         {
