@@ -57,6 +57,7 @@ namespace day4
             SecondStart = int.Parse(match.Groups["SecondStart"].ValueSpan);
             SecondEnd = int.Parse(match.Groups["SecondEnd"].ValueSpan);
         }
+
         public static readonly Regex ElfPairRegex = new(@"^(?<FirstStart>\d*)-(?<FirstEnd>\d*),(?<SecondStart>\d*)-(?<SecondEnd>\d*)$");
 
         public int FirstStart { get; }

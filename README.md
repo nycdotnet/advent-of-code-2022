@@ -35,4 +35,4 @@ This one was interesting because the RP of it made it sound more complicated tha
 
 ### Day 4:
 
-I did this manually at first but then remembered C# has a Range class added in C# 8.  After reminding myself about that, I went back to doing it manually as Range appears to only implemented to assist with getting ranges in collections.  Pretty cool that days 1-4 run in just about 32 ms.
+I did this manually at first but then remembered C# has a Range class added in C# 8.  After reminding myself about that, I went back to doing it manually as Range appears to only implemented to assist with getting ranges in collections.  Pretty cool that days 1-4 run in just about 32 ms.  Flexing that revised Regex system including named capture groups and parsing from spans.
