@@ -1,4 +1,6 @@
 ﻿using common;
+using System.Text;
+using System.Text.RegularExpressions;
 
 namespace day5
 {
@@ -8,12 +10,31 @@ namespace day5
         {
             var allInput = input.ToList();
             var firstBlankIndex = allInput.FindIndex(string.IsNullOrEmpty);
-            var crates = Crates.Parse(allInput.Take(firstBlankIndex));
+            Crates = Crates.Parse(allInput.Take(firstBlankIndex));
+            StackMoves = allInput
+                .Skip(firstBlankIndex + 1)
+                .Where(s => !string.IsNullOrEmpty(s))
+                .Select(StackMove.Parse)
+                .ToList();
         }
+
+        public Crates Crates { get; private init; }
+        public List<StackMove> StackMoves { get; private init; }
 
         public string GetAnswerForPart1()
         {
-            throw new NotImplementedException();
+            for (var i = 0; i < StackMoves.Count; i++)
+            {
+                var currentOp = StackMoves[i];
+                var origin = Crates.CrateStacks[currentOp.OriginStack - 1];
+                var destination = Crates.CrateStacks[currentOp.DestinationStack - 1];
+                for (var subOpIndex = 0; subOpIndex < currentOp.Count; subOpIndex++)
+                {
+                    var item = origin.Stack.Pop();
+                    destination.Stack.Push(item);
+                }
+            }
+            return string.Join("", Crates.CrateStacks.Select(cs => cs.Stack.Peek()));
         }
 
         public string GetAnswerForPart2()
@@ -74,5 +95,26 @@ namespace day5
         /// The one-based position of this stack of crates
         /// </summary>
         public required int Position { get; init; }
+    }
+
+    public record StackMove
+    {
+        public static StackMove Parse(string input)
+        {
+            var match = StackMoveRegex.Match(input);
+
+            return new StackMove
+            {
+                Count = int.Parse(match.Groups[nameof(Count)].ValueSpan),
+                OriginStack = int.Parse(match.Groups[nameof(OriginStack)].ValueSpan),
+                DestinationStack = int.Parse(match.Groups[nameof(DestinationStack)].ValueSpan),
+            };
+        }
+
+        public required int Count { get; init; }
+        public required int OriginStack { get; init; }
+        public required int DestinationStack { get; init; }
+
+        public static readonly Regex StackMoveRegex = new(@"^move (?<Count>\d*) from (?<OriginStack>\d*) to (?<DestinationStack>\d*)$");
     }
 }

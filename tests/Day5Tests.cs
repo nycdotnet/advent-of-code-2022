@@ -1,11 +1,6 @@
-﻿using day4;
+﻿using common;
 using day5;
 using FluentAssertions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace tests
@@ -16,7 +11,16 @@ namespace tests
         public void Part1WithSampleInputProducesDocumentedResult()
         {
             var sut = new Day5(example_input_1.Split('\n'));
-            sut.GetAnswerForPart1().Should().Be("2");
+            sut.GetAnswerForPart1().Should().Be("CMZ");
+        }
+
+        [Fact]
+        public void Part1WithActualInputProducesCorrectResult()
+        {
+            var input = Utils.GetResourceStringFromAssembly<Day5>("day5.input.txt");
+            var sut = new Day5(input.ReplaceLineEndings("\n").Split('\n'));
+            sut.GetAnswerForPart1().Should().Be("CNSZFDVLJ");
+        }
         }
 
         public static readonly string example_input_1 = """

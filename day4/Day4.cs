@@ -52,10 +52,10 @@ namespace day4
         {
             var match = ElfPairRegex.Match(input);
 
-            FirstStart = int.Parse(match.Groups["FirstStart"].ValueSpan);
-            FirstEnd = int.Parse(match.Groups["FirstEnd"].ValueSpan);
-            SecondStart = int.Parse(match.Groups["SecondStart"].ValueSpan);
-            SecondEnd = int.Parse(match.Groups["SecondEnd"].ValueSpan);
+            FirstStart = int.Parse(match.Groups[nameof(FirstStart)].ValueSpan);
+            FirstEnd = int.Parse(match.Groups[nameof(FirstEnd)].ValueSpan);
+            SecondStart = int.Parse(match.Groups[nameof(SecondStart)].ValueSpan);
+            SecondEnd = int.Parse(match.Groups[nameof(SecondEnd)].ValueSpan);
         }
 
         public static readonly Regex ElfPairRegex = new(@"^(?<FirstStart>\d*)-(?<FirstEnd>\d*),(?<SecondStart>\d*)-(?<SecondEnd>\d*)$");
