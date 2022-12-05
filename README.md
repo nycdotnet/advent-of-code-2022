@@ -36,3 +36,9 @@ This one was interesting because the RP of it made it sound more complicated tha
 ### Day 4:
 
 I did this manually at first but then remembered C# has a Range class added in C# 8.  After reminding myself about that, I went back to doing it manually as Range appears to only implemented to assist with getting ranges in collections.  Pretty cool that days 1-4 run in just about 32 ms.  Flexing that revised Regex system including named capture groups and parsing from spans.
+
+### Day 5:
+
+This one was interesting.  Definitely had a much more complicated parsing requirement - effectively parsing a diagram and a set of instructions.  It was interesting to realize that LINQ doesn't really seem to have a thing to fork a stream, but maybe I'm missing something.  Like "do this until you find condition X, then switch to this other method" would be interesting to have a way to do, but I wonder how you'd aggregate it - possibly in a tuple of enumerables?  Anyway - I was able to do it in two parts and the rest of the problem was pretty simple.  One was literally using Stack and then the second part was reversing the order that the stack would work.  I used a List here but maybe there's a better way by switching to use List<T>s instead of Stack<T>s.  Not sure, but it's done.
+
+I am getting the sense that this year is way easier than last year, though I am sure there will be a mind-blowing one soon enough.  No bit fiddling yet this year yet.
