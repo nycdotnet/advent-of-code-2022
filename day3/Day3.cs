@@ -1,5 +1,4 @@
 ﻿using common;
-using System.ComponentModel;
 
 namespace day3
 {

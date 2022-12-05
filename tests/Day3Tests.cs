@@ -1,12 +1,6 @@
 ﻿using common;
-using day2;
 using day3;
 using FluentAssertions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace tests

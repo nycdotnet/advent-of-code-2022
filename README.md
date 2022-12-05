@@ -32,3 +32,7 @@ The "optimized" implementations can be compared via this [SharpLab.io link](http
 ### Day 3:
 
 This one was interesting because the RP of it made it sound more complicated than the program requirements were.  This was actually rather similar to day 1 and 2 I think - mostly dealing with sets of things and finding stuff in common.  I am curious about the performance implications of using the HashSet to do the `.Intersect` work versus just using an array for the size of the data (under 50 chars) - I may have to benchmark that.  Test Explorer claims the problems both run in under 1 ms so it can't be that bad, but perhaps rented arrays would result in less overall memory allocation.
+
+### Day 4:
+
+I did this manually at first but then remembered C# has a Range class added in C# 8.  After reminding myself about that, I went back to doing it manually as Range appears to only implemented to assist with getting ranges in collections.
