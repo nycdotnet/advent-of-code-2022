@@ -21,6 +21,20 @@ namespace tests
             var sut = new Day5(input.ReplaceLineEndings("\n").Split('\n'));
             sut.GetAnswerForPart1().Should().Be("CNSZFDVLJ");
         }
+
+        [Fact]
+        public void Part2WithSampleInputProducesDocumentedResult()
+        {
+            var sut = new Day5(example_input_1.Split('\n'));
+            sut.GetAnswerForPart2().Should().Be("MCD");
+        }
+
+        [Fact]
+        public void Part2WithActualInputProducesCorrectResult()
+        {
+            var input = Utils.GetResourceStringFromAssembly<Day5>("day5.input.txt");
+            var sut = new Day5(input.ReplaceLineEndings("\n").Split('\n'));
+            sut.GetAnswerForPart2().Should().Be("QNDWLMGNS");
         }
 
         public static readonly string example_input_1 = """

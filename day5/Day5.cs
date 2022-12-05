@@ -1,5 +1,4 @@
 ﻿using common;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace day5
@@ -39,7 +38,24 @@ namespace day5
 
         public string GetAnswerForPart2()
         {
-            throw new NotImplementedException();
+            for (var i = 0; i < StackMoves.Count; i++)
+            {
+                var currentOp = StackMoves[i];
+                var origin = Crates.CrateStacks[currentOp.OriginStack - 1];
+                var destination = Crates.CrateStacks[currentOp.DestinationStack - 1];
+                var items = new List<char>(currentOp.Count);
+
+                for (var subOpIndex = 0; subOpIndex < currentOp.Count; subOpIndex++)
+                {
+                    items.Add(origin.Stack.Pop());
+                }
+
+                for (var subOpIndex = items.Count - 1; subOpIndex >= 0; subOpIndex--)
+                {
+                    destination.Stack.Push(items[subOpIndex]);
+                }
+            }
+            return string.Join("", Crates.CrateStacks.Select(cs => cs.Stack.Peek()));
         }
     }
 
