@@ -1,6 +1,9 @@
 ﻿using common;
 using day1;
 using day2;
+using day3;
+using day4;
+using System.Diagnostics;
 
 namespace advent_of_code_2022
 {
@@ -8,8 +11,13 @@ namespace advent_of_code_2022
     {
         static void Main(string[] _)
         {
-            Day1();
-            Day2();
+            var ticks = 0L;
+            ticks += GetTicksAndReport(Day1);
+            ticks += GetTicksAndReport(Day2);
+            ticks += GetTicksAndReport(Day3);
+            ticks += GetTicksAndReport(Day4);
+
+            Console.WriteLine($"Total time elapsed: {new TimeSpan(ticks).TotalMilliseconds}ms");
         }
 
         private static void Day1()
@@ -26,6 +34,35 @@ namespace advent_of_code_2022
             var day = new Day2(input.ReplaceLineEndings("\n").Split('\n'));
             Console.WriteLine($"{day.GetType().Name} answer 1: {day.GetAnswerForPart1()}");
             Console.WriteLine($"{day.GetType().Name} answer 2: {day.GetAnswerForPart2()}");
+        }
+
+        private static void Day3()
+        {
+            var input = Utils.GetResourceStringFromAssembly<Day3>("day3.input.txt");
+            var day = new Day3(input.ReplaceLineEndings("\n").Split('\n'));
+            Console.WriteLine($"{day.GetType().Name} answer 1: {day.GetAnswerForPart1()}");
+            Console.WriteLine($"{day.GetType().Name} answer 2: {day.GetAnswerForPart2()}");
+        }
+
+        private static void Day4()
+        {
+            var input = Utils.GetResourceStringFromAssembly<Day4>("day4.input.txt");
+            var day = new Day4(input.ReplaceLineEndings("\n").Split('\n'));
+            Console.WriteLine($"{day.GetType().Name} answer 1: {day.GetAnswerForPart1()}");
+            Console.WriteLine($"{day.GetType().Name} answer 2: {day.GetAnswerForPart2()}");
+        }
+
+        /// <summary>
+        /// NOTE: Real benchmarks should use Benchmark.NET - this is just for relative info on the console
+        /// </summary>
+        private static long GetTicksAndReport(Action action)
+        {
+            var sw = new Stopwatch();
+            sw.Start();
+            action.Invoke();
+            sw.Stop();
+            Console.WriteLine($"Completed action in {sw.ElapsedMilliseconds}ms");
+            return sw.ElapsedTicks;
         }
     }
 }
