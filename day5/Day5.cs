@@ -38,12 +38,13 @@ namespace day5
 
         public string GetAnswerForPart2()
         {
+            var items = new List<char>();
             for (var i = 0; i < StackMoves.Count; i++)
             {
                 var currentOp = StackMoves[i];
                 var origin = Crates.CrateStacks[currentOp.OriginStack - 1];
                 var destination = Crates.CrateStacks[currentOp.DestinationStack - 1];
-                var items = new List<char>(currentOp.Count);
+                items.Clear();
 
                 for (var subOpIndex = 0; subOpIndex < currentOp.Count; subOpIndex++)
                 {
