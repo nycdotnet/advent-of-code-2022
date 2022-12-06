@@ -42,3 +42,10 @@ I did this manually at first but then remembered C# has a Range class added in C
 This one was interesting.  Definitely had a much more complicated parsing requirement - effectively parsing a diagram and a set of instructions.  It was interesting to realize that LINQ doesn't really seem to have a thing to fork a stream, but maybe I'm missing something.  Like "do this until you find condition X, then switch to this other method" would be interesting to have a way to do, but I wonder how you'd aggregate it - possibly in a tuple of enumerables?  Anyway - I was able to do it in two parts and the rest of the problem was pretty simple.  One was literally using Stack and then the second part was reversing the order that the stack would work.  I used a List here but maybe there's a better way by switching to use List<T>s instead of Stack<T>s.  Not sure, but it's done.  Minor optimization by re-using the List and clearing rather than newing one up on each iteration.
 
 I am getting the sense that this year is way easier than last year, though I am sure there will be a mind-blowing one soon enough.  No bit fiddling yet this year yet.
+
+### Day 6:
+
+Yeah still simple.  Really just one method to write and change input size, but I tweaked it a bit so in theory it could be used with more data and still run in a reasonable time.  I'm certain it could be further optimized by bailing early rather than at the end, but it was fast enough.  I anticipate Day 7 being a whopper as we didn't fully explore the communicator protocol.
+
+Total runtime Day 1 - Day 6 is 34.4ms with CTRL+F5.
+
