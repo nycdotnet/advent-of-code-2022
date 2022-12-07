@@ -51,6 +51,21 @@ namespace tests
             sut.GetAnswerForPart1().Should().Be("1648397");
         }
 
+        [Fact]
+        public void Part2WithSampleInputProducesDocumentedResult()
+        {
+            var sut = new Day7(example_input_1.ReplaceLineEndings("\n").Split('\n'));
+            sut.GetAnswerForPart2().Should().Be("24933642");
+        }
+
+        [Fact]
+        public void Part2WithActualInputProducesCorrectResult()
+        {
+            var input = Utils.GetResourceStringFromAssembly<Day7>("day7.input.txt");
+            var sut = new Day7(input.ReplaceLineEndings("\n").Split('\n'));
+            sut.GetAnswerForPart2().Should().Be("1815525");
+        }
+
         public static readonly string example_input_1 = """
             $ cd /
             $ ls

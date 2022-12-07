@@ -26,7 +26,20 @@ namespace day7
 
         public string GetAnswerForPart2()
         {
-            throw new NotImplementedException();
+            const int totalDiskSpace = 70000000;
+            const int totalFreeSpaceRequired = 30000000;
+            var usedDiskSpace = RootElfFolder.GetTotalSize();
+            var currentFreeSpace = totalDiskSpace - usedDiskSpace;
+            var additionalSpaceRequired = totalFreeSpaceRequired - currentFreeSpace;
+
+            var allFolders = RootElfFolder.AllSubFolders().Concat(new[] { RootElfFolder });
+
+            var result = allFolders
+                .Select(f => (folder: f, totalSize: f.GetTotalSize()))
+                .Where(f => f.totalSize >= additionalSpaceRequired)
+                .MinBy(f => f.totalSize);
+
+            return result.totalSize.ToString();
         }
     }
 
