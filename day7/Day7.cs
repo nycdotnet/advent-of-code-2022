@@ -110,7 +110,7 @@ namespace day7
 
                 if (IsChangeDirectory(command))
                 {
-                    var targetFolderName = command.Substring(5);
+                    var targetFolderName = command[5..];
                     if (targetFolderName == "/")
                     {
                         currentFolder = root;
@@ -163,7 +163,7 @@ namespace day7
                                 throw new UnreachableException();
                             }
 
-                            currentFolder!.AddFolder(item.Substring(4));
+                            currentFolder!.AddFolder(item[4..]);
                         }
 
                         contentIndex++;
@@ -215,11 +215,17 @@ namespace day7
             }
         }
 
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            WriteToStringBuilder(sb, 0);
+            return sb.ToString();
+        }
+
         private static bool IsChangeDirectory(string s) => s.StartsWith("$ cd ");
         private static bool IsListCommand(string s) => s == "$ ls";
         private static bool IsCommand(string s) => s.StartsWith('$');
         private static bool IsDirectory(string s) => s.StartsWith("dir ");
-        private static bool IsFile(string s) => s.StartsWith("dir ");
         public static Regex FileRegex = new Regex(@"^(?<Size>\d*) (?<FileName>.*)$");
     }
 }
