@@ -121,15 +121,11 @@ namespace day7
                     }
                     else
                     {
-                        var targetFolder = (ElfFolder?)currentFolder.Entries.Find(f => f is ElfFolder folder && folder.Name == targetFolderName);
-                        if (targetFolder != null)
-                        {
-                            currentFolder = targetFolder;
-                        }
-                        else
-                        {
-                            throw new KeyNotFoundException($"This folder does not contain subfolder {targetFolderName}.");
-                        }
+                        var targetFolder = currentFolder
+                            .Entries
+                            .Find(f => f is ElfFolder folder && folder.Name == targetFolderName) as ElfFolder;
+
+                        currentFolder = targetFolder ?? throw new KeyNotFoundException($"This folder does not contain subfolder {targetFolderName}.");
                     }
                     contentIndex++;
                     continue;
@@ -140,7 +136,7 @@ namespace day7
                     contentIndex++;
                     if (DoneParsing())
                     {
-                        // there was nothing in this directory and it is the end of the input.
+                        // there was nothing in this directory and this is the end of the input.
                         continue;
                     }
                     var item = content[contentIndex];
@@ -148,6 +144,7 @@ namespace day7
                     while (!IsCommand(item) && !DoneParsing())
                     {
                         var file = FileRegex.Match(item);
+
                         if (file.Success)
                         {
                             currentFolder!.AddFile(new ElfFile
@@ -156,14 +153,13 @@ namespace day7
                                 Size = int.Parse(file.Groups["Size"].ValueSpan)
                             });
                         }
+                        else if (IsDirectory(item))
+                        {
+                            currentFolder!.AddFolder(item[4..]);
+                        }
                         else
                         {
-                            if (!IsDirectory(item))
-                            {
-                                throw new UnreachableException();
-                            }
-
-                            currentFolder!.AddFolder(item[4..]);
+                            throw new NotSupportedException($"Expected {item} to be either a file or a folder.");
                         }
 
                         contentIndex++;
@@ -219,7 +215,7 @@ namespace day7
         {
             var sb = new StringBuilder();
             WriteToStringBuilder(sb, 0);
-            return sb.ToString();
+            return sb.ToString().TrimEnd();
         }
 
         private static bool IsChangeDirectory(string s) => s.StartsWith("$ cd ");

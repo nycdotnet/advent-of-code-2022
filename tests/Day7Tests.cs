@@ -1,8 +1,6 @@
 ﻿using common;
-using day5;
 using day7;
 using FluentAssertions;
-using System.Text;
 using Xunit;
 
 namespace tests
@@ -13,9 +11,7 @@ namespace tests
         public void ParsingWorksAsDocumented()
         {
             var sut = new Day7(example_input_1.ReplaceLineEndings("\n").Split('\n'));
-            var sb = new StringBuilder();
-            sut.RootElfFolder.WriteToStringBuilder(sb);
-            sb.ToString().TrimEnd().Should().Be(example_directory_listing_1);
+            sut.RootElfFolder.ToString().Should().Be(example_directory_listing_1);
         }
 
         [Fact]
