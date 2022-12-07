@@ -49,3 +49,8 @@ Yeah still simple.  Really just one method to write and change input size, but I
 
 Total runtime Day 1 - Day 6 is 34.4ms with CTRL+F5.
 
+### Day 7:
+
+OK definitely the complexity here is still on the parser side, though wow it got a lot more complex today.  The challenge was to design a system to interpret the results of basic file system commands (like `ls`, `cd`, etc) to build out a file system hierarchy and then identify a subfolder with at least a certain amount of files.  Taking it a bit at a time it worked out ok.  I started without using an array of the input data and just tried to use a raw Enumerator, but gave up as I was having to keep track of if it was done or not all over.  The array allocation was small for this use case, so I didn't look back.  I may check out a raw enumerator later with a wrapper for "IsComplete" possibly in the future to compare the allocations.
+
+Total runtime Day 1 - Day 7 is 40.1ms with CTRL+F5.
