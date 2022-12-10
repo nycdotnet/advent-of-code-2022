@@ -15,13 +15,20 @@ namespace day9
         public string GetAnswerForPart1()
         {
             var tailPositions = new HashSet<Point2d>();
-            var result = Simulate(tailTracker: p => tailPositions.Add(p));
+            var result = SimulateTwo(tailTracker: p => tailPositions.Add(p));
             return tailPositions.Count.ToString();
         }
 
-        public (Point2d finalHeadPosition, Point2d finalTailPosition) Simulate(
+        public string GetAnswerForPart2()
+        {
+            var tailPositions = new HashSet<Point2d>();
+            var result = SimulateSet(10, tailTracker: p => tailPositions.Add(p));
+            return tailPositions.Count.ToString();
+        }
+
+        public (Point2d finalHeadPosition, Point2d finalTailPosition) SimulateTwo(
             int movesToDo = -1,
-            Action<Point2d> tailTracker = null)
+            Action<Point2d>? tailTracker = null)
         {
             var headPosition = new Point2d { X = 0, Y = 0 };
             var tailPosition = new Point2d { X = 0, Y = 0 };
@@ -37,98 +44,129 @@ namespace day9
                 for (var step = 0; step < move.Magnitude; step++)
                 {
                     ApplyStep(headPosition, move);
-                    SimulateTail(headPosition, tailPosition);
+                    SimulateFollower(headPosition, tailPosition);
                     tailTracker?.Invoke(tailPosition);
                 }
             }
 
             return (headPosition, tailPosition);
+        }
 
-            static void SimulateTail(Point2d headPosition, Point2d tailPosition)
+        public List<Point2d> SimulateSet(
+            int Count,
+            int movesToDo = -1,
+            Action<Point2d>? tailTracker = null)
+        {
+            var points = new List<Point2d>(Count);
+            for (var i = 0; i < Count; i++)
             {
-                if (headPosition.IsTouching(tailPosition))
-                {
-                    return;
-                }
+                points.Add(new Point2d { X = 0, Y = 0 });
+            }
+            
+            if (movesToDo == -1)
+            {
+                movesToDo = Moves.Count;
+            }
 
-                if (headPosition.X == tailPosition.X)
+            for (var moveIndex = 0; moveIndex < movesToDo; moveIndex++)
+            {
+                var move = Moves[moveIndex];
+                for (var step = 0; step < move.Magnitude; step++)
                 {
-                    if (tailPosition.Y < headPosition.Y)
+                    ApplyStep(points[0], move);
+                    for (var pointIndex = 0; pointIndex < Count - 1; pointIndex++)
                     {
-                        tailPosition.Y++;
-                    }
-                    else
-                    {
-                        tailPosition.Y--;
+                        SimulateFollower(points[pointIndex], points[pointIndex + 1]);
+                        if (pointIndex + 2 == Count)
+                        {
+                            tailTracker?.Invoke(points[pointIndex + 1]);
+                        }
                     }
                 }
-                else if (headPosition.Y == tailPosition.Y)
+            }
+
+            return points;
+        }
+
+        static void SimulateFollower(Point2d leadPosition, Point2d followerPosition)
+        {
+            if (leadPosition.IsTouching(followerPosition))
+            {
+                return;
+            }
+
+            if (leadPosition.X == followerPosition.X)
+            {
+                if (followerPosition.Y < leadPosition.Y)
                 {
-                    if (tailPosition.X < headPosition.X)
+                    followerPosition.Y++;
+                }
+                else
+                {
+                    followerPosition.Y--;
+                }
+            }
+            else if (leadPosition.Y == followerPosition.Y)
+            {
+                if (followerPosition.X < leadPosition.X)
+                {
+                    followerPosition.X++;
+                }
+                else
+                {
+                    followerPosition.X--;
+                }
+            }
+            else
+            {
+                if (leadPosition.X > followerPosition.X)
+                {
+                    if (leadPosition.Y > followerPosition.Y)
                     {
-                        tailPosition.X++;
+                        followerPosition.X++;
+                        followerPosition.Y++;
                     }
                     else
                     {
-                        tailPosition.X--;
+                        followerPosition.X++;
+                        followerPosition.Y--;
                     }
                 }
                 else
                 {
-                    if (headPosition.X > tailPosition.X)
+                    if (leadPosition.Y > followerPosition.Y)
                     {
-                        if (headPosition.Y > tailPosition.Y)
-                        {
-                            tailPosition.X++;
-                            tailPosition.Y++;
-                        }
-                        else
-                        {
-                            tailPosition.X++;
-                            tailPosition.Y--;
-                        }
+                        followerPosition.X--;
+                        followerPosition.Y++;
                     }
                     else
                     {
-                        if (headPosition.Y > tailPosition.Y)
-                        {
-                            tailPosition.X--;
-                            tailPosition.Y++;
-                        }
-                        else
-                        {
-                            tailPosition.X--;
-                            tailPosition.Y--;
-                        }
+                        followerPosition.X--;
+                        followerPosition.Y--;
                     }
-                }
-            }
-
-            static void ApplyStep(Point2d headPosition, RopeMove move)
-            {
-                switch (move.Direction)
-                {
-                    case 'U':
-                        headPosition.Y += 1;
-                        break;
-                    case 'D':
-                        headPosition.Y -= 1;
-                        break;
-                    case 'R':
-                        headPosition.X += 1;
-                        break;
-                    case 'L':
-                        headPosition.X -= 1;
-                        break;
-                    default:
-                        break;
                 }
             }
         }
 
-        public string GetAnswerForPart2()
+        static void ApplyStep(Point2d headPosition, RopeMove move)
         {
-            throw new NotImplementedException();
+            switch (move.Direction)
+            {
+                case 'U':
+                    headPosition.Y += 1;
+                    break;
+                case 'D':
+                    headPosition.Y -= 1;
+                    break;
+                case 'R':
+                    headPosition.X += 1;
+                    break;
+                case 'L':
+                    headPosition.X -= 1;
+                    break;
+                default:
+                    break;
+            }
         }
     }
 

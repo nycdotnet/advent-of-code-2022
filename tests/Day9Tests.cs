@@ -35,7 +35,7 @@ namespace tests
         {
             var sut = new Day9(exampleInput1.Split('\n'));
             
-            var result = sut.Simulate(simulateSteps);
+            var result = sut.SimulateTwo(simulateSteps);
             result.finalHeadPosition.X.Should().Be(expectedHeadX);
             result.finalHeadPosition.Y.Should().Be(expectedHeadY);
             result.finalTailPosition.X.Should().Be(expectedTailX);
@@ -82,6 +82,28 @@ namespace tests
             sut.GetAnswerForPart1().Should().Be("6503");
         }
 
+        [Fact]
+        public void Part2WithSampleInputProducesDocumentedResult()
+        {
+            var sut = new Day9(exampleInput1.Split('\n'));
+            sut.GetAnswerForPart2().Should().Be("1");
+        }
+
+        [Fact]
+        public void Part2WithSampleInput2ProducesDocumentedResult()
+        {
+            var sut = new Day9(exampleInput2.Split('\n'));
+            sut.GetAnswerForPart2().Should().Be("36");
+        }
+
+        [Fact]
+        public void Part2WithActualInputProducesCorrectResult()
+        {
+            var input = Utils.GetResourceStringFromAssembly<Day9>("day9.input.txt");
+            var sut = new Day9(input.ReplaceLineEndings("\n").Split('\n'));
+            sut.GetAnswerForPart2().Should().Be("2724");
+        }
+
         public readonly static string exampleInput1 = """
             R 4
             U 4
@@ -91,6 +113,17 @@ namespace tests
             D 1
             L 5
             R 2
+            """.ReplaceLineEndings("\n");
+
+        public readonly static string exampleInput2 = """
+            R 5
+            U 8
+            L 8
+            D 3
+            R 17
+            D 10
+            L 25
+            U 20
             """.ReplaceLineEndings("\n");
     }
 }
