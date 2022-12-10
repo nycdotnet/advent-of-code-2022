@@ -42,7 +42,101 @@ namespace day8
 
         public string GetAnswerForPart2()
         {
-            throw new NotImplementedException();
+            var bestScenicScore = 0;
+            for (var row = 0; row < Data.Length; row++)
+            {
+                for (var col = 0; col < Data[row].Length; col++)
+                {
+                    var scenicScore = CalculateScenicScore(row, col);
+                    if (scenicScore > bestScenicScore)
+                    {
+                        bestScenicScore = scenicScore;
+                    }
+                }
+            }
+            return bestScenicScore.ToString();
+        }
+
+        public int CalculateScenicScore(int rowIndex, int colIndex)
+        {
+            var north = ViewDistanceToNorth(rowIndex, colIndex);
+            if (north == 0)
+            {
+                return 0;
+            }
+            var south = ViewDistanceToSouth(rowIndex, colIndex);
+            if (south == 0)
+            {
+                return 0;
+            }
+            var west = ViewDistanceToWest(rowIndex, colIndex);
+            if (west == 0)
+            {
+                return 0;
+            }
+            var east = ViewDistanceToEast(rowIndex, colIndex);
+
+            return north * south * east * west;
+        }
+
+        public int ViewDistanceToNorth(int rowIndex, int colIndex)
+        {
+            var referenceHeight = Data[rowIndex][colIndex];
+            var viewDistance = 0;
+            for (var r = rowIndex - 1; r >= 0; r--)
+            {
+                viewDistance++;
+                if (Data[r][colIndex] >= referenceHeight)
+                {
+                    break;
+                }
+            }
+            return viewDistance;
+        }
+
+        public int ViewDistanceToSouth(int rowIndex, int colIndex)
+        {
+            var referenceHeight = Data[rowIndex][colIndex];
+            var viewDistance = 0;
+            for (var r = rowIndex + 1; r < Data.Length; r++)
+            {
+                viewDistance++;
+                if (Data[r][colIndex] >= referenceHeight)
+                {
+                    break;
+                }
+            }
+            return viewDistance;
+        }
+
+        public int ViewDistanceToWest(int rowIndex, int colIndex)
+        {
+            var referenceHeight = Data[rowIndex][colIndex];
+            var viewDistance = 0;
+            for (var c = colIndex - 1; c >= 0; c--)
+            {
+                viewDistance++;
+                if (Data[rowIndex][c] >= referenceHeight)
+                {
+                    break;
+                }
+            }
+            return viewDistance;
+        }
+
+        public int ViewDistanceToEast(int rowIndex, int colIndex)
+        {
+            var referenceHeight = Data[rowIndex][colIndex];
+            var viewDistance = 0;
+            for (var c = colIndex +1; c < Data[rowIndex].Length; c++)
+            {
+                viewDistance++;
+                if (Data[rowIndex][c] >= referenceHeight)
+                {
+                    break;
+                }
+            }
+            return viewDistance;
         }
 
         /// <summary>
@@ -185,7 +279,7 @@ namespace day8
         {
             NotSure,
             Visible,
-            Invisible
+            Invisible // didn't wind up needing this.
         }
 
         const int MAX_HEIGHT = 9;
