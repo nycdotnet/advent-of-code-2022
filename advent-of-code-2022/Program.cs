@@ -1,5 +1,6 @@
 ﻿using common;
 using day1;
+using day10;
 using day2;
 using day3;
 using day4;
@@ -7,6 +8,7 @@ using day5;
 using day6;
 using day7;
 using day8;
+using day9;
 using System.Diagnostics;
 
 namespace advent_of_code_2022
@@ -24,6 +26,8 @@ namespace advent_of_code_2022
             ticks += GetTicksAndReport(Day6);
             ticks += GetTicksAndReport(Day7);
             ticks += GetTicksAndReport(Day8);
+            ticks += GetTicksAndReport(Day9);
+            ticks += GetTicksAndReport(Day10);
 
             Console.WriteLine($"Total time elapsed: {new TimeSpan(ticks).TotalMilliseconds}ms");
         }
@@ -91,6 +95,22 @@ namespace advent_of_code_2022
             var day = new Day8(input.ReplaceLineEndings("\n").Split('\n'));
             Console.WriteLine($"{day.GetType().Name} answer 1: {day.GetAnswerForPart1()}");
             Console.WriteLine($"{day.GetType().Name} answer 2: {day.GetAnswerForPart2()}");
+        }
+
+        private static void Day9()
+        {
+            var input = Utils.GetResourceStringFromAssembly<Day9>("day9.input.txt");
+            var day = new Day9(input.ReplaceLineEndings("\n").Split('\n'));
+            Console.WriteLine($"{day.GetType().Name} answer 1: {day.GetAnswerForPart1()}");
+            Console.WriteLine($"{day.GetType().Name} answer 2: {day.GetAnswerForPart2()}");
+        }
+
+        private static void Day10()
+        {
+            var input = Utils.GetResourceStringFromAssembly<Day10>("day10.input.txt");
+            var day = new Day10(input.ReplaceLineEndings("\n").Split('\n'));
+            Console.WriteLine($"{day.GetType().Name} answer 1: {day.GetAnswerForPart1()}");
+            Console.WriteLine($"{day.GetType().Name} answer 2:\n{day.GetAnswerForPart2()}");
         }
 
         /// <summary>

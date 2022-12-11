@@ -1,4 +1,5 @@
 ﻿using common;
+using System.Text;
 
 namespace day10
 {
@@ -11,7 +12,7 @@ namespace day10
 
         public List<Instruction> Instructions { get; }
 
-        public void Simulate(int instructionCount = -1, Action<int,int,Instruction,CpuState>? duringInstruction = null, Action<int,Instruction,CpuState>? afterInstruction = null)
+        public void Simulate(int instructionCount = -1, Action<int,int,Instruction,CpuState>? onCycle = null, Action<int,Instruction,CpuState>? afterInstruction = null)
         {
             if (instructionCount == -1)
             {
@@ -31,7 +32,7 @@ namespace day10
                 for (var instructionClock = 0; instructionClock < instructionClockCycles; instructionClock++)
                 {
                     cpu.NextCycle();
-                    duringInstruction?.Invoke(instructionIndex, instructionClock, currentInstruction, cpu);
+                    onCycle?.Invoke(instructionIndex, instructionClock, currentInstruction, cpu);
                     switch (currentInstruction.Kind)
                     {
                         case Instruction.InstructionKind.Noop:
@@ -66,7 +67,7 @@ namespace day10
         public string GetAnswerForPart1()
         {
             var signalStrengths = new List<int>();
-            Simulate(duringInstruction: (instructionIndex, instructionClock, instruction, cpu) =>
+            Simulate(onCycle: (instructionIndex, instructionClock, instruction, cpu) =>
             {
                 if ((cpu.Cycle - 20) % 40 == 0)
                 {
@@ -78,8 +79,31 @@ namespace day10
 
         public string GetAnswerForPart2()
         {
-            throw new NotImplementedException();
+            var buffer = new StringBuilder((DISPLAY_WIDTH + 1) * DISPLAY_HEIGHT);
+            Simulate(onCycle: (instructionIndex, instructionClock, instruction, cpu) =>
+            {
+                var drawIndex = (cpu.Cycle - 1) % DISPLAY_WIDTH;
+                var lineIndex = cpu.Cycle / DISPLAY_WIDTH;
+
+                if (drawIndex == cpu.X || drawIndex == cpu.X - 1 || drawIndex == cpu.X + 1)
+                {
+                    buffer.Append('#');
+                }
+                else
+                {
+                    buffer.Append('.');
+                }
+
+                if (drawIndex == DISPLAY_WIDTH - 1 && lineIndex < DISPLAY_HEIGHT)
+                {
+                    buffer.Append('\n');
+                }
+            });
+            return buffer.ToString();
         }
+
+        const int DISPLAY_HEIGHT = 6;
+        const int DISPLAY_WIDTH = 40;
     }
 
     public record CpuState

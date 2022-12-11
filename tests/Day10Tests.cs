@@ -26,7 +26,7 @@ namespace tests
         {
             var debugOutput = new List<string>();
             var sut = new Day10(TrivialProgram.Split('\n'));
-            sut.Simulate(duringInstruction: (instructionIndex, instructionClock, instruction, cpu) =>
+            sut.Simulate(onCycle: (instructionIndex, instructionClock, instruction, cpu) =>
             {
                 debugOutput.Add($"Instruction {instruction.Kind}({instruction.Magnitude}) at index {instructionIndex} is executing. CPU State: {cpu}.");
             },
@@ -52,6 +52,39 @@ namespace tests
             var sut = new Day10(input.ReplaceLineEndings("\n").Split('\n'));
             sut.GetAnswerForPart1().Should().Be("13220");
         }
+
+        [Fact]
+        public void Part2WithSampleInputProducesDocumentedResult()
+        {
+            var sut = new Day10(LongerExampleProgram.Split('\n'));
+            sut.GetAnswerForPart2().Should().Be(Part2LongerExampleDocumentedResult);
+        }
+
+        [Fact]
+        public void Part2WithActualInputProducesCorrectResult()
+        {
+            var input = Utils.GetResourceStringFromAssembly<Day10>("day10.input.txt");
+            var sut = new Day10(input.ReplaceLineEndings("\n").Split('\n'));
+            sut.GetAnswerForPart2().Should().Be(CorrectPart2Answer);
+        }
+
+        public static readonly string Part2LongerExampleDocumentedResult = """
+            ##..##..##..##..##..##..##..##..##..##..
+            ###...###...###...###...###...###...###.
+            ####....####....####....####....####....
+            #####.....#####.....#####.....#####.....
+            ######......######......######......####
+            #######.......#######.......#######.....
+            """.ReplaceLineEndings("\n");
+
+        public static readonly string CorrectPart2Answer = """
+            ###..#..#..##..#..#.#..#.###..####.#..#.
+            #..#.#..#.#..#.#.#..#..#.#..#.#....#.#..
+            #..#.#..#.#..#.##...####.###..###..##...
+            ###..#..#.####.#.#..#..#.#..#.#....#.#..
+            #.#..#..#.#..#.#.#..#..#.#..#.#....#.#..
+            #..#..##..#..#.#..#.#..#.###..####.#..#.
+            """.ReplaceLineEndings("\n");
 
         public static readonly string TrivialProgram = """
             noop
