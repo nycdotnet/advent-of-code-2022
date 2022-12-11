@@ -29,26 +29,8 @@ namespace day9
             int movesToDo = -1,
             Action<Point2d>? tailTracker = null)
         {
-            var headPosition = new Point2d { X = 0, Y = 0 };
-            var tailPosition = new Point2d { X = 0, Y = 0 };
-
-            if (movesToDo == -1)
-            {
-                movesToDo = Moves.Count;
-            }
-
-            for (var i = 0; i < movesToDo; i++)
-            {
-                var move = Moves[i];
-                for (var step = 0; step < move.Magnitude; step++)
-                {
-                    ApplyStep(headPosition, move);
-                    SimulateFollower(headPosition, tailPosition);
-                    tailTracker?.Invoke(tailPosition);
-                }
-            }
-
-            return (headPosition, tailPosition);
+            var result = SimulateSet(2, movesToDo, tailTracker);
+            return (result[0], result[1]);
         }
 
         public List<Point2d> SimulateSet(
