@@ -11,15 +11,15 @@
   <ItemGroup>
     <ProjectReference Include="..\common\common.csproj" />
     <ProjectReference Include="..\day10\day10.csproj" />
-    <ProjectReference Include="..\day1\day1.csproj" />
-    <ProjectReference Include="..\day2\day2.csproj" />
-    <ProjectReference Include="..\day3\day3.csproj" />
-    <ProjectReference Include="..\day4\day4.csproj" />
-    <ProjectReference Include="..\day5\day5.csproj" />
-    <ProjectReference Include="..\day6\day6.csproj" />
-    <ProjectReference Include="..\day7\day7.csproj" />
-    <ProjectReference Include="..\day8\day8.csproj" />
-    <ProjectReference Include="..\day9\day9.csproj" />
+    <ProjectReference Include="..\day1\day01.csproj" />
+    <ProjectReference Include="..\day2\day02.csproj" />
+    <ProjectReference Include="..\day3\day03.csproj" />
+    <ProjectReference Include="..\day4\day04.csproj" />
+    <ProjectReference Include="..\day5\day05.csproj" />
+    <ProjectReference Include="..\day6\day06.csproj" />
+    <ProjectReference Include="..\day7\day07.csproj" />
+    <ProjectReference Include="..\day8\day08.csproj" />
+    <ProjectReference Include="..\day9\day09.csproj" />
   </ItemGroup>
 
 </Project>

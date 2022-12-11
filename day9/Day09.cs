@@ -1,10 +1,10 @@
 ﻿using common;
 
-namespace day9
+namespace day09
 {
-    public class Day9 : IAdventOfCodeDay
+    public class Day09 : IAdventOfCodeDay
     {
-        public Day9(IEnumerable<string> input)
+        public Day09(IEnumerable<string> input)
         {
             Moves = input.Select(RopeMove.Parse).ToList();
         }

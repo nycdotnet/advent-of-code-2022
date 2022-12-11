@@ -1,11 +1,11 @@
 ﻿using common;
 using System.Text;
 
-namespace day8
+namespace day08
 {
-    public class Day8 : IAdventOfCodeDay
+    public class Day08 : IAdventOfCodeDay
     {
-        public Day8(IEnumerable<string> input)
+        public Day08(IEnumerable<string> input)
         {
             Data = input.Select(x => x.Select(CharDigitToInt).ToArray()).ToArray();
         }

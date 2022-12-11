@@ -66,3 +66,5 @@ This one was a simulation of rope physics.  The main trick with part 2 was that 
 ### Day 10:
 
 This required simulation of a CPU with a fixed clock and corresponding CRT, and it included a Youtube video link to a "racing the beam" thing describing how the Atari 2600 worked - very cool.  I was able to get to it fairly straight-forwardly.  The main source of bugs I had (twice!) was forgetting that the `%` operator has high precedence and I needed to use parentheses more.
+
+Also this one caused me to have to do the "annual rename" of all the earlier projects to use two-digit project and class names.  :-(

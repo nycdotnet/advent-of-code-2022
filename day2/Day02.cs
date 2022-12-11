@@ -1,10 +1,10 @@
 ﻿using common;
 
-namespace day2
+namespace day02
 {
-    public class Day2 : IAdventOfCodeDay
+    public class Day02 : IAdventOfCodeDay
     {
-        public Day2(IEnumerable<string> input)
+        public Day02(IEnumerable<string> input)
         {
             Strategies = ParseStrategies(input);
         }

@@ -1,18 +1,18 @@
 ﻿using common;
-using day5;
-using day6;
+using day05;
+using day06;
 using FluentAssertions;
 using Xunit;
 
 namespace tests
 {
-    public class Day6Tests
+    public class Day06Tests
     {
         [Theory]
         [MemberData(nameof(BuffersWithPacketStart))]
         public void StartOfPacketWorksAsExpected(string buffer, int expectedIndex)
         {
-            var sut = new Day6(new string[] { buffer });
+            var sut = new Day06(new string[] { buffer });
             sut.StartOfPacketMarkerIndex().Should().Be(expectedIndex);
         }
 
@@ -20,23 +20,23 @@ namespace tests
         [MemberData(nameof(BuffersWithMessageStart))]
         public void StartOfMessageWorksAsExpected(string buffer, int expectedIndex)
         {
-            var sut = new Day6(new string[] { buffer });
+            var sut = new Day06(new string[] { buffer });
             sut.StartOfMessageMarkerIndex().Should().Be(expectedIndex);
         }
 
         [Fact]
         public void Part1WithActualInputProducesCorrectResult()
         {
-            var input = Utils.GetResourceStringFromAssembly<Day6>("day6.input.txt");
-            var sut = new Day6(input.ReplaceLineEndings("\n").Split('\n'));
+            var input = Utils.GetResourceStringFromAssembly<Day06>("day06.input.txt");
+            var sut = new Day06(input.ReplaceLineEndings("\n").Split('\n'));
             sut.GetAnswerForPart1().Should().Be("1909");
         }
 
         [Fact]
         public void Part2WithActualInputProducesCorrectResult()
         {
-            var input = Utils.GetResourceStringFromAssembly<Day6>("day6.input.txt");
-            var sut = new Day6(input.ReplaceLineEndings("\n").Split('\n'));
+            var input = Utils.GetResourceStringFromAssembly<Day06>("day06.input.txt");
+            var sut = new Day06(input.ReplaceLineEndings("\n").Split('\n'));
             sut.GetAnswerForPart2().Should().Be("3380");
         }
 

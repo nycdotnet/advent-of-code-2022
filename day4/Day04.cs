@@ -1,11 +1,11 @@
 ﻿using common;
 using System.Text.RegularExpressions;
 
-namespace day4
+namespace day04
 {
-    public class Day4 : IAdventOfCodeDay
+    public class Day04 : IAdventOfCodeDay
     {
-        public Day4(IEnumerable<string> input)
+        public Day04(IEnumerable<string> input)
         {
             ElfPairs = input
                 .Where(x => !string.IsNullOrEmpty(x))

@@ -3,11 +3,11 @@ using System.Diagnostics;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace day7
+namespace day07
 {
-    public class Day7 : IAdventOfCodeDay
+    public class Day07 : IAdventOfCodeDay
     {
-        public Day7(IEnumerable<string> input)
+        public Day07(IEnumerable<string> input)
         {
             RootElfFolder = ElfFolder.Parse(input);
         }

@@ -1,39 +1,39 @@
 ﻿using common;
-using day1;
+using day01;
 using FluentAssertions;
 using Xunit;
 
 namespace tests
 {
-    public class Day1Tests
+    public class Day01Tests
     {
         [Fact]
         public void Part1WithSampleInputProducesDocumentedResult()
         {
-            var sut = new Day1(example_input_1.Split('\n'));
+            var sut = new Day01(example_input_1.Split('\n'));
             sut.GetAnswerForPart1().Should().Be("24000");
         }
 
         [Fact]
         public void Part1WithActualInputProducesCorrectResult()
         {
-            var input = Utils.GetResourceStringFromAssembly<Day1>("day1.input.txt");
-            var sut = new Day1(input.ReplaceLineEndings("\n").Split('\n'));
+            var input = Utils.GetResourceStringFromAssembly<Day01>("day01.input.txt");
+            var sut = new Day01(input.ReplaceLineEndings("\n").Split('\n'));
             sut.GetAnswerForPart1().Should().Be("70374");
         }
 
         [Fact]
         public void Part2WithSampleInputProducesDocumentedResult()
         {
-            var sut = new Day1(example_input_1.Split('\n'));
+            var sut = new Day01(example_input_1.Split('\n'));
             sut.GetAnswerForPart2().Should().Be("45000");
         }
 
         [Fact]
         public void Part2WithActualInputProducesCorrectResult()
         {
-            var input = Utils.GetResourceStringFromAssembly<Day1>("day1.input.txt");
-            var sut = new Day1(input.ReplaceLineEndings("\n").Split('\n'));
+            var input = Utils.GetResourceStringFromAssembly<Day01>("day01.input.txt");
+            var sut = new Day01(input.ReplaceLineEndings("\n").Split('\n'));
             sut.GetAnswerForPart2().Should().Be("204610");
         }
 

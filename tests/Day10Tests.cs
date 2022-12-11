@@ -1,6 +1,6 @@
 ﻿using common;
 using day10;
-using day9;
+using day09;
 using FluentAssertions;
 using Xunit;
 using static day10.Instruction;

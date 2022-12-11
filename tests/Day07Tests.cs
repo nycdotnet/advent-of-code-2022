@@ -1,23 +1,23 @@
 ﻿using common;
-using day7;
+using day07;
 using FluentAssertions;
 using Xunit;
 
 namespace tests
 {
-    public class Day7Tests
+    public class Day07Tests
     {
         [Fact]
         public void ParsingWorksAsDocumented()
         {
-            var sut = new Day7(example_input_1.ReplaceLineEndings("\n").Split('\n'));
+            var sut = new Day07(example_input_1.ReplaceLineEndings("\n").Split('\n'));
             sut.RootElfFolder.ToString().Should().Be(example_directory_listing_1);
         }
 
         [Fact]
         public void AllSubFoldersProducesExpectedResult()
         {
-            var sut = new Day7(example_input_1.ReplaceLineEndings("\n").Split('\n'));
+            var sut = new Day07(example_input_1.ReplaceLineEndings("\n").Split('\n'));
             var result = sut.RootElfFolder.AllSubFolders().ToArray();
             result.Select(f => f.Name).Should().Equal(new[] { "a", "e", "d" });
         }
@@ -35,30 +35,30 @@ namespace tests
         [Fact]
         public void Part1WithSampleInputProducesDocumentedResult()
         {
-            var sut = new Day7(example_input_1.ReplaceLineEndings("\n").Split('\n'));
+            var sut = new Day07(example_input_1.ReplaceLineEndings("\n").Split('\n'));
             sut.GetAnswerForPart1().Should().Be("95437");
         }
 
         [Fact]
         public void Part1WithActualInputProducesCorrectResult()
         {
-            var input = Utils.GetResourceStringFromAssembly<Day7>("day7.input.txt");
-            var sut = new Day7(input.ReplaceLineEndings("\n").Split('\n'));
+            var input = Utils.GetResourceStringFromAssembly<Day07>("day07.input.txt");
+            var sut = new Day07(input.ReplaceLineEndings("\n").Split('\n'));
             sut.GetAnswerForPart1().Should().Be("1648397");
         }
 
         [Fact]
         public void Part2WithSampleInputProducesDocumentedResult()
         {
-            var sut = new Day7(example_input_1.ReplaceLineEndings("\n").Split('\n'));
+            var sut = new Day07(example_input_1.ReplaceLineEndings("\n").Split('\n'));
             sut.GetAnswerForPart2().Should().Be("24933642");
         }
 
         [Fact]
         public void Part2WithActualInputProducesCorrectResult()
         {
-            var input = Utils.GetResourceStringFromAssembly<Day7>("day7.input.txt");
-            var sut = new Day7(input.ReplaceLineEndings("\n").Split('\n'));
+            var input = Utils.GetResourceStringFromAssembly<Day07>("day07.input.txt");
+            var sut = new Day07(input.ReplaceLineEndings("\n").Split('\n'));
             sut.GetAnswerForPart2().Should().Be("1815525");
         }
 

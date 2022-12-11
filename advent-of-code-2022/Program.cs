@@ -1,14 +1,14 @@
 ﻿using common;
-using day1;
+using day01;
 using day10;
-using day2;
-using day3;
-using day4;
-using day5;
-using day6;
-using day7;
-using day8;
-using day9;
+using day02;
+using day03;
+using day04;
+using day05;
+using day06;
+using day07;
+using day08;
+using day09;
 using System.Diagnostics;
 
 namespace advent_of_code_2022
@@ -34,73 +34,73 @@ namespace advent_of_code_2022
 
         private static void Day1()
         {
-            var input = Utils.GetResourceStringFromAssembly<Day1>("day1.input.txt");
-            var day = new Day1(input.ReplaceLineEndings("\n").Split('\n'));
+            var input = Utils.GetResourceStringFromAssembly<Day01>("day01.input.txt");
+            var day = new Day01(input.ReplaceLineEndings("\n").Split('\n'));
             Console.WriteLine($"{day.GetType().Name} answer 1: {day.GetAnswerForPart1()}");
             Console.WriteLine($"{day.GetType().Name} answer 2: {day.GetAnswerForPart2()}");
         }
 
         private static void Day2()
         {
-            var input = Utils.GetResourceStringFromAssembly<Day2>("day2.input.txt");
-            var day = new Day2(input.ReplaceLineEndings("\n").Split('\n'));
+            var input = Utils.GetResourceStringFromAssembly<Day02>("day02.input.txt");
+            var day = new Day02(input.ReplaceLineEndings("\n").Split('\n'));
             Console.WriteLine($"{day.GetType().Name} answer 1: {day.GetAnswerForPart1()}");
             Console.WriteLine($"{day.GetType().Name} answer 2: {day.GetAnswerForPart2()}");
         }
 
         private static void Day3()
         {
-            var input = Utils.GetResourceStringFromAssembly<Day3>("day3.input.txt");
-            var day = new Day3(input.ReplaceLineEndings("\n").Split('\n'));
+            var input = Utils.GetResourceStringFromAssembly<Day03>("day03.input.txt");
+            var day = new Day03(input.ReplaceLineEndings("\n").Split('\n'));
             Console.WriteLine($"{day.GetType().Name} answer 1: {day.GetAnswerForPart1()}");
             Console.WriteLine($"{day.GetType().Name} answer 2: {day.GetAnswerForPart2()}");
         }
 
         private static void Day4()
         {
-            var input = Utils.GetResourceStringFromAssembly<Day4>("day4.input.txt");
-            var day = new Day4(input.ReplaceLineEndings("\n").Split('\n'));
+            var input = Utils.GetResourceStringFromAssembly<Day04>("day04.input.txt");
+            var day = new Day04(input.ReplaceLineEndings("\n").Split('\n'));
             Console.WriteLine($"{day.GetType().Name} answer 1: {day.GetAnswerForPart1()}");
             Console.WriteLine($"{day.GetType().Name} answer 2: {day.GetAnswerForPart2()}");
         }
 
         private static void Day5()
         {
-            var input = Utils.GetResourceStringFromAssembly<Day5>("day5.input.txt");
-            var day = new Day5(input.ReplaceLineEndings("\n").Split('\n'));
+            var input = Utils.GetResourceStringFromAssembly<Day05>("day05.input.txt");
+            var day = new Day05(input.ReplaceLineEndings("\n").Split('\n'));
             Console.WriteLine($"{day.GetType().Name} answer 1: {day.GetAnswerForPart1()}");
-            day = new Day5(input.ReplaceLineEndings("\n").Split('\n'));
+            day = new Day05(input.ReplaceLineEndings("\n").Split('\n'));
             Console.WriteLine($"{day.GetType().Name} answer 2: {day.GetAnswerForPart2()}");
         }
 
         private static void Day6()
         {
-            var input = Utils.GetResourceStringFromAssembly<Day6>("day6.input.txt");
-            var day = new Day6(input.ReplaceLineEndings("\n").Split('\n'));
+            var input = Utils.GetResourceStringFromAssembly<Day06>("day06.input.txt");
+            var day = new Day06(input.ReplaceLineEndings("\n").Split('\n'));
             Console.WriteLine($"{day.GetType().Name} answer 1: {day.GetAnswerForPart1()}");
             Console.WriteLine($"{day.GetType().Name} answer 2: {day.GetAnswerForPart2()}");
         }
 
         private static void Day7()
         {
-            var input = Utils.GetResourceStringFromAssembly<Day7>("day7.input.txt");
-            var day = new Day7(input.ReplaceLineEndings("\n").Split('\n'));
+            var input = Utils.GetResourceStringFromAssembly<Day07>("day07.input.txt");
+            var day = new Day07(input.ReplaceLineEndings("\n").Split('\n'));
             Console.WriteLine($"{day.GetType().Name} answer 1: {day.GetAnswerForPart1()}");
             Console.WriteLine($"{day.GetType().Name} answer 2: {day.GetAnswerForPart2()}");
         }
 
         private static void Day8()
         {
-            var input = Utils.GetResourceStringFromAssembly<Day8>("day8.input.txt");
-            var day = new Day8(input.ReplaceLineEndings("\n").Split('\n'));
+            var input = Utils.GetResourceStringFromAssembly<Day08>("day08.input.txt");
+            var day = new Day08(input.ReplaceLineEndings("\n").Split('\n'));
             Console.WriteLine($"{day.GetType().Name} answer 1: {day.GetAnswerForPart1()}");
             Console.WriteLine($"{day.GetType().Name} answer 2: {day.GetAnswerForPart2()}");
         }
 
         private static void Day9()
         {
-            var input = Utils.GetResourceStringFromAssembly<Day9>("day9.input.txt");
-            var day = new Day9(input.ReplaceLineEndings("\n").Split('\n'));
+            var input = Utils.GetResourceStringFromAssembly<Day09>("day09.input.txt");
+            var day = new Day09(input.ReplaceLineEndings("\n").Split('\n'));
             Console.WriteLine($"{day.GetType().Name} answer 1: {day.GetAnswerForPart1()}");
             Console.WriteLine($"{day.GetType().Name} answer 2: {day.GetAnswerForPart2()}");
         }

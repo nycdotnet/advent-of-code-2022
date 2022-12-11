@@ -1,10 +1,10 @@
 ﻿using common;
 
-namespace day3
+namespace day03
 {
-    public class Day3 : IAdventOfCodeDay
+    public class Day03 : IAdventOfCodeDay
     {
-        public Day3(IEnumerable<string> input)
+        public Day03(IEnumerable<string> input)
         {
             Rucksacks = input
                 .Where(x => !string.IsNullOrEmpty(x))

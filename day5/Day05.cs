@@ -1,11 +1,11 @@
 ﻿using common;
 using System.Text.RegularExpressions;
 
-namespace day5
+namespace day05
 {
-    public class Day5 : IAdventOfCodeDay
+    public class Day05 : IAdventOfCodeDay
     {
-        public Day5(IEnumerable<string> input)
+        public Day05(IEnumerable<string> input)
         {
             var allInput = input.ToList();
             var firstBlankIndex = allInput.FindIndex(string.IsNullOrEmpty);

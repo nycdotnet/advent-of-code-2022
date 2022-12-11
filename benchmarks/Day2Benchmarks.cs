@@ -2,7 +2,7 @@
 using BenchmarkDotNet.Mathematics;
 using BenchmarkDotNet.Order;
 using common;
-using day2;
+using day02;
 
 namespace benchmarks
 {
@@ -13,8 +13,8 @@ namespace benchmarks
     {
         public Day2Benchmarks()
         {
-            var input = Utils.GetResourceStringFromAssembly<Day2>("day2.input.txt");
-            Day = new Day2(input.ReplaceLineEndings("\n").Split('\n'));
+            var input = Utils.GetResourceStringFromAssembly<Day02>("day02.input.txt");
+            Day = new Day02(input.ReplaceLineEndings("\n").Split('\n'));
         }
 
         [Benchmark]
@@ -35,6 +35,6 @@ namespace benchmarks
             return Day.Strategies.Sum(s => s.Part1ScoreResultAlt2);
         }
 
-        public Day2 Day { get; }
+        public Day02 Day { get; }
     }
 }

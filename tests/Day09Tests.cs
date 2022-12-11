@@ -1,17 +1,17 @@
 ﻿using common;
-using day8;
-using day9;
+using day08;
+using day09;
 using FluentAssertions;
 using Xunit;
 
 namespace tests
 {
-    public class Day9Tests
+    public class Day09Tests
     {
         [Fact]
         public void ParsingWorks()
         {
-            var sut = new Day9(exampleInput1.Split('\n'));
+            var sut = new Day09(exampleInput1.Split('\n'));
             sut.Moves.Should().HaveCount(8);
             sut.Moves[0].Should().Be(new RopeMove { Direction = 'R', Magnitude = 4 });
             sut.Moves[7].Should().Be(new RopeMove { Direction = 'R', Magnitude = 2 });
@@ -33,7 +33,7 @@ namespace tests
             int expectedTailX,
             int expectedTailY)
         {
-            var sut = new Day9(exampleInput1.Split('\n'));
+            var sut = new Day09(exampleInput1.Split('\n'));
             
             var result = sut.SimulateTwo(simulateSteps);
             result.finalHeadPosition.X.Should().Be(expectedHeadX);
@@ -70,37 +70,37 @@ namespace tests
         [Fact]
         public void Part1WithSampleInputProducesDocumentedResult()
         {
-            var sut = new Day9(exampleInput1.Split('\n'));
+            var sut = new Day09(exampleInput1.Split('\n'));
             sut.GetAnswerForPart1().Should().Be("13");
         }
 
         [Fact]
         public void Part1WithActualInputProducesCorrectResult()
         {
-            var input = Utils.GetResourceStringFromAssembly<Day9>("day9.input.txt");
-            var sut = new Day9(input.ReplaceLineEndings("\n").Split('\n'));
+            var input = Utils.GetResourceStringFromAssembly<Day09>("day09.input.txt");
+            var sut = new Day09(input.ReplaceLineEndings("\n").Split('\n'));
             sut.GetAnswerForPart1().Should().Be("6503");
         }
 
         [Fact]
         public void Part2WithSampleInputProducesDocumentedResult()
         {
-            var sut = new Day9(exampleInput1.Split('\n'));
+            var sut = new Day09(exampleInput1.Split('\n'));
             sut.GetAnswerForPart2().Should().Be("1");
         }
 
         [Fact]
         public void Part2WithSampleInput2ProducesDocumentedResult()
         {
-            var sut = new Day9(exampleInput2.Split('\n'));
+            var sut = new Day09(exampleInput2.Split('\n'));
             sut.GetAnswerForPart2().Should().Be("36");
         }
 
         [Fact]
         public void Part2WithActualInputProducesCorrectResult()
         {
-            var input = Utils.GetResourceStringFromAssembly<Day9>("day9.input.txt");
-            var sut = new Day9(input.ReplaceLineEndings("\n").Split('\n'));
+            var input = Utils.GetResourceStringFromAssembly<Day09>("day09.input.txt");
+            var sut = new Day09(input.ReplaceLineEndings("\n").Split('\n'));
             sut.GetAnswerForPart2().Should().Be("2724");
         }
 

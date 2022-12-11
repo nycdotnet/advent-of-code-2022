@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace day2
+namespace day02
 {
     public record Strategy
     {

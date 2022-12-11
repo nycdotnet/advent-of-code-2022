@@ -1,16 +1,16 @@
 ﻿using common;
-using day2;
+using day02;
 using FluentAssertions;
 using Xunit;
 
 namespace tests
 {
-    public class Day2Tests
+    public class Day02Tests
     {
         [Fact]
         public void ParsingStrategiesWorksAsExpected()
         {
-            var sut = new Day2(example_input_1.Split('\n'));
+            var sut = new Day02(example_input_1.Split('\n'));
             sut.Strategies[0].TheyPlay.Should().Be(Strategy.Play.Rock);
             sut.Strategies[0].Part1YouPlay.Should().Be(Strategy.Play.Paper);
             sut.Strategies[0].Part1Result.Should().Be(Strategy.Result.Win);
@@ -42,30 +42,30 @@ namespace tests
         [Fact]
         public void Part1WithSampleInputProducesDocumentedResult()
         {
-            var sut = new Day2(example_input_1.Split('\n'));
+            var sut = new Day02(example_input_1.Split('\n'));
             sut.GetAnswerForPart1().Should().Be("15");
         }
 
         [Fact]
         public void Part1WithActualInputProducesCorrectResult()
         {
-            var input = Utils.GetResourceStringFromAssembly<Day2>("day2.input.txt");
-            var sut = new Day2(input.ReplaceLineEndings("\n").Split('\n'));
+            var input = Utils.GetResourceStringFromAssembly<Day02>("day02.input.txt");
+            var sut = new Day02(input.ReplaceLineEndings("\n").Split('\n'));
             sut.GetAnswerForPart1().Should().Be("12794");
         }
 
         [Fact]
         public void Part2WithSampleInputProducesDocumentedResult()
         {
-            var sut = new Day2(example_input_1.Split('\n'));
+            var sut = new Day02(example_input_1.Split('\n'));
             sut.GetAnswerForPart2().Should().Be("12");
         }
 
         [Fact]
         public void Part2WithActualInputProducesCorrectResult()
         {
-            var input = Utils.GetResourceStringFromAssembly<Day2>("day2.input.txt");
-            var sut = new Day2(input.ReplaceLineEndings("\n").Split('\n'));
+            var input = Utils.GetResourceStringFromAssembly<Day02>("day02.input.txt");
+            var sut = new Day02(input.ReplaceLineEndings("\n").Split('\n'));
             sut.GetAnswerForPart2().Should().Be("14979");
         }
 

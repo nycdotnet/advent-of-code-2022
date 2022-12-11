@@ -1,12 +1,12 @@
 ﻿using common;
 
-namespace day6
+namespace day06
 {
-    public class Day6 : IAdventOfCodeDay
+    public class Day06 : IAdventOfCodeDay
     {
         public string DataStreamBuffer { get; }
 
-        public Day6(IEnumerable<string> input)
+        public Day06(IEnumerable<string> input)
         {
             DataStreamBuffer = input.Where(s => !string.IsNullOrEmpty(s)).Single();
         }
