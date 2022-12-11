@@ -1,5 +1,4 @@
 ﻿using common;
-using System.Diagnostics;
 
 namespace day9
 {
