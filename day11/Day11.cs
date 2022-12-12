@@ -1,4 +1,5 @@
 ﻿using common;
+using System.Diagnostics;
 using System.Text.RegularExpressions;
 
 namespace day11
@@ -14,6 +15,68 @@ namespace day11
         }
 
         public List<Monkey> Monkeys { get; }
+
+        public void SimulateRound(Action<string>? logger = null)
+        {
+            for (var monkeyIndex = 0; monkeyIndex < Monkeys.Count; monkeyIndex++)
+            {
+                var monkey = Monkeys[monkeyIndex];
+                logger?.Invoke($"Monkey {monkeyIndex}:");
+
+                for (var itemIndex = 0; itemIndex < monkey.Items.Count; itemIndex++)
+                {
+                    var worryLevel = monkey.Items[itemIndex];
+                    logger?.Invoke($"  Monkey inspects an item with a worry level of {worryLevel}.");
+
+                    // do op.
+                    if (monkey.Operation.Op == "*")
+                    {
+                        if (monkey.Operation.Other == "old")
+                        {
+                            worryLevel = worryLevel * worryLevel;
+                            logger?.Invoke($"    Worry level is multiplied by itself to {worryLevel}.");
+                        }
+                        else
+                        {
+                            var multiplier = int.Parse(monkey.Operation.Other);
+                            worryLevel = worryLevel * multiplier;
+                            logger?.Invoke($"    Worry level is multiplied by {multiplier} to {worryLevel}.");
+                        }
+                    }
+                    else if (monkey.Operation.Op == "+")
+                    {
+                        var other = int.Parse(monkey.Operation.Other);
+                        worryLevel = worryLevel + other;
+                        logger?.Invoke($"    Worry level increases by {other} to {worryLevel}.");
+                    }
+                    else
+                    {
+                        throw new UnreachableException($"Not supported operator {monkey.Operation.Op}.");
+                    }
+
+                    worryLevel /= 3;
+                    logger?.Invoke($"    Monkey gets bored with item. Worry level is divided by 3 to {worryLevel}.");
+
+                    // do test and "throw" to the other monkey
+                    if (worryLevel % monkey.TestDivisor == 0)
+                    {
+                        logger?.Invoke($"    Current worry level is divisible by {monkey.TestDivisor}.");
+                        logger?.Invoke($"    Item with worry level {worryLevel} is thrown to monkey {monkey.IfTrueMonkeyId}.");
+                        Monkeys[monkey.IfTrueMonkeyId].Items.Add(worryLevel);
+                    }
+                    else
+                    {
+                        logger?.Invoke($"    Current worry level is not divisible by {monkey.TestDivisor}.");
+                        logger?.Invoke($"    Item with worry level {worryLevel} is thrown to monkey {monkey.IfFalseMonkeyId}.");
+                        Monkeys[monkey.IfFalseMonkeyId].Items.Add(worryLevel);
+                    }
+
+                    // remove the item from this monkey and fix the item index.
+                    monkey.Items.RemoveAt(itemIndex);
+                    itemIndex--;
+                }
+            }
+        }
 
         public string GetAnswerForPart1()
         {
@@ -44,9 +107,8 @@ namespace day11
                     .ToList(),
                 Operation = new MonkeyOp
                 {
-                    A = ops.Groups[nameof(MonkeyOp.A)].Value,
                     Op = ops.Groups[nameof(MonkeyOp.Op)].Value,
-                    B = ops.Groups[nameof(MonkeyOp.B)].Value,
+                    Other = ops.Groups[nameof(MonkeyOp.Other)].Value,
                 },
                 TestDivisor = int.Parse(TestRegex.Match(input[3]).Groups["divisor"].ValueSpan),
                 IfTrueMonkeyId = int.Parse(IfTrueRegex.Match(input[4]).Groups["monkey"].ValueSpan),
@@ -58,7 +120,7 @@ namespace day11
 
         public static readonly Regex MonkeyIdRegex = new Regex(@"Monkey (?<Id>\d*):");
         public static readonly Regex StartingItemsRegex = new Regex(@"Starting items: (?<Items>.*)");
-        public static readonly Regex OperationRegex = new Regex(@"Operation: new = (?<A>\S*) (?<Op>\+|\*) (?<B>\S*)");
+        public static readonly Regex OperationRegex = new Regex(@"Operation: new = old (?<Op>\+|\*) (?<Other>\S*)");
         public static readonly Regex TestRegex = new Regex(@"Test: divisible by (?<divisor>\d*)");
         public static readonly Regex IfTrueRegex = new Regex(@"If true: throw to monkey (?<monkey>\d*)");
         public static readonly Regex IfFalseRegex = new Regex(@"If false: throw to monkey (?<monkey>\d*)");
@@ -74,8 +136,7 @@ namespace day11
 
     public record MonkeyOp
     {
-        public required string A { get; init; }
         public required string Op { get; init; }
-        public required string B { get; init; }
+        public required string Other { get; init; }
     }
 }
