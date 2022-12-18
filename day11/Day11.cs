@@ -1,22 +1,44 @@
 ﻿using common;
 using System.Diagnostics;
+using System.Numerics;
 using System.Text.RegularExpressions;
 
 namespace day11
 {
     public class Day11 : IAdventOfCodeDay
     {
-        public Day11(IEnumerable<string> input)
+        public Day11(IEnumerable<string> input, Func<BigInteger, BigInteger>? worryFactorAdjustment = null)
         {
             Monkeys = input
                 .SelectPartition(string.IsNullOrEmpty)
                 .Select(Monkey.Parse)
                 .ToList();
+
+            ReasonablenessNumber = CalculateReasonableness(Monkeys);
+
+            if (worryFactorAdjustment is null)
+            {
+                worryFactorAdjustment = wfa => wfa / 3;
+            }
+            this.worryFactorAdjustment = worryFactorAdjustment;
+        }
+
+        public static int CalculateReasonableness(IEnumerable<Monkey> monkeys)
+        {
+            var number = 1;
+            foreach(var monkey in monkeys)
+            {
+                number *= monkey.TestDivisor;
+            }
+            return number;
         }
 
         public List<Monkey> Monkeys { get; }
+        public int ReasonablenessNumber { get; }
 
-        public void SimulateRound(Action<string>? logger = null)
+        private readonly Func<BigInteger, BigInteger> worryFactorAdjustment;
+
+        public void SimulateRound(Action<string>? logger = null, Action<(int monkeyIndex, BigInteger itemWorryLevel)>? monkeyInspectsItem = null)
         {
             for (var monkeyIndex = 0; monkeyIndex < Monkeys.Count; monkeyIndex++)
             {
@@ -27,6 +49,7 @@ namespace day11
                 {
                     var worryLevel = monkey.Items[itemIndex];
                     logger?.Invoke($"  Monkey inspects an item with a worry level of {worryLevel}.");
+                    monkeyInspectsItem?.Invoke((monkeyIndex, worryLevel));
 
                     // do op.
                     if (monkey.Operation.Op == "*")
@@ -54,7 +77,8 @@ namespace day11
                         throw new UnreachableException($"Not supported operator {monkey.Operation.Op}.");
                     }
 
-                    worryLevel /= 3;
+                    worryLevel = worryFactorAdjustment(worryLevel) % ReasonablenessNumber;
+
                     logger?.Invoke($"    Monkey gets bored with item. Worry level is divided by 3 to {worryLevel}.");
 
                     // do test and "throw" to the other monkey
@@ -80,12 +104,55 @@ namespace day11
 
         public string GetAnswerForPart1()
         {
-            throw new NotImplementedException();
+            if (worryFactorAdjustment(9) != 3)
+            {
+                throw new NotSupportedException("Unexpected worry factor adjustment for part 1.  Expected divide by 3.");
+            }
+
+            var monkeyInspections = GetMonkeyInspections(20);
+
+            var counts = monkeyInspections
+                .Values
+                .OrderByDescending(v => v)
+                .Take(2)
+                .ToArray();
+
+            return (counts[0] * counts[1]).ToString();
         }
 
         public string GetAnswerForPart2()
         {
-            throw new NotImplementedException();
+            const int roundsToSimulate = 10_000;
+            if (worryFactorAdjustment(9) != 9)
+            {
+                throw new NotSupportedException("Unexpected worry factor adjustment for part 2.  Expected identity function.");
+            }
+
+            var monkeyInspections = Monkeys.ToDictionary(m => m.Id, _ => BigInteger.Zero);
+
+            for (var i = 0; i < roundsToSimulate; i++)
+            {
+                SimulateRound(monkeyInspectsItem: m => monkeyInspections[m.monkeyIndex]++);
+            }
+
+            var counts = monkeyInspections
+                .Values
+                .OrderByDescending(v => v)
+                .Take(2)
+                .ToArray();
+
+            return (counts[0] * counts[1]).ToString();
+        }
+
+        public Dictionary<int, BigInteger> GetMonkeyInspections(int roundsToSimulate)
+        {
+            var monkeyInspections = Monkeys.ToDictionary(m => m.Id, _ => BigInteger.Zero);
+
+            for (var i = 0; i < roundsToSimulate; i++)
+            {
+                SimulateRound(monkeyInspectsItem: m => monkeyInspections[m.monkeyIndex]++);
+            }
+            return monkeyInspections;
         }
     }
 
@@ -103,7 +170,7 @@ namespace day11
                     .Groups[nameof(Items)]
                     .Value
                     .Split(", ")
-                    .Select(int.Parse)
+                    .Select(BigInteger.Parse)
                     .ToList(),
                 Operation = new MonkeyOp
                 {
@@ -127,7 +194,7 @@ namespace day11
 
 
         public required int Id { get; init; }
-        public required List<int> Items { get; init; }
+        public required List<BigInteger> Items { get; init; }
         public required MonkeyOp Operation { get; init; }
         public required int TestDivisor { get; init; }
         public required int IfTrueMonkeyId { get; init; }

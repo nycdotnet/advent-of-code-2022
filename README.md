@@ -68,3 +68,10 @@ This one was a simulation of rope physics.  The main trick with part 2 was that 
 This required simulation of a CPU with a fixed clock and corresponding CRT, and it included a Youtube video link to a "racing the beam" thing describing how the Atari 2600 worked - very cool.  I was able to get to it fairly straight-forwardly.  The main source of bugs I had (twice!) was forgetting that the `%` operator has high precedence and I needed to use parentheses more.
 
 Also this one caused me to have to do the "annual rename" of all the earlier projects to use two-digit project and class names.  :-(
+
+### Day 11:
+
+This one was definitely quite hard - the parsing was fairly significant, part 1 was straight-forward once the parsing was done, but part 2 was impossible without knowing the math trick.  I learned something that in retrospect was fairly obvious but I had to look up how to do it.  Perhaps I could have figured it out over time, but yeah `int` didn't work, `long` didn't work, and then `BigInteger` didn't work either haha so, yeah there must be a trick.  Who knows if I'll run into this in the future, but up until now I haven't in the wild.  I did notice some people were complaining about this problem on the subreddit, but honestly I feel like it's fine to learn something about math/number theory and not just get the programming practice in.
+
+Note: This was the first time I used `BigInteger`.  Was very easy to switch to this from `int`/`long` and seemed fast enough until the numbers got ridiculous.  It's not required anymore once you know the "trick", but I am leaving it since it was fine.
+

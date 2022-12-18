@@ -1,5 +1,7 @@
-﻿using day11;
+﻿using common;
+using day11;
 using FluentAssertions;
+using System.Numerics;
 using Xunit;
 
 namespace tests
@@ -13,18 +15,18 @@ namespace tests
             sut.Monkeys.Count.Should().Be(4);
 
             sut.Monkeys[0].Id.Should().Be(0);
-            sut.Monkeys[0].Items.Should().Equal(new int[] { 79, 98 });
+            sut.Monkeys[0].Items.Should().Equal(new BigInteger[] { 79, 98 });
             sut.Monkeys[0].Operation.Op.Should().Be("*");
             sut.Monkeys[0].Operation.Other.Should().Be("19");
             sut.Monkeys[0].TestDivisor.Should().Be(23);
             sut.Monkeys[0].IfTrueMonkeyId.Should().Be(2);
             sut.Monkeys[0].IfFalseMonkeyId.Should().Be(3);
             sut.Monkeys[1].Id.Should().Be(1);
-            sut.Monkeys[1].Items.Should().Equal(new int[] { 54, 65, 75, 74 });
+            sut.Monkeys[1].Items.Should().Equal(new BigInteger[] { 54, 65, 75, 74 });
             sut.Monkeys[2].Id.Should().Be(2);
-            sut.Monkeys[2].Items.Should().Equal(new int[] { 79, 60, 97 });
+            sut.Monkeys[2].Items.Should().Equal(new BigInteger[] { 79, 60, 97 });
             sut.Monkeys[3].Id.Should().Be(3);
-            sut.Monkeys[3].Items.Should().Equal(new int[] { 74 });
+            sut.Monkeys[3].Items.Should().Equal(new BigInteger[] { 74 });
         }
 
         [Fact]
@@ -35,6 +37,62 @@ namespace tests
             sut.SimulateRound(output.Add);
 
             string.Join('\n', output).Should().Be(exampleRound1Narration);
+        }
+
+        [Fact]
+        public void Part1WithSampleInputProducesDocumentedResult()
+        {
+            var sut = new Day11(exampleInput1.Split('\n'));
+            sut.GetAnswerForPart1().Should().Be("10605");
+        }
+
+        [Fact]
+        public void Part1WithActualInputProducesCorrectResult()
+        {
+            var input = Utils.GetResourceStringFromAssembly<Day11>("day11.input.txt");
+            var sut = new Day11(input.ReplaceLineEndings("\n").Split('\n'));
+            sut.GetAnswerForPart1().Should().Be("58794");
+        }
+
+        [Fact]
+        public void Part2WithSampleInputProducesDocumentedResultToRound1()
+        {
+            var sut = new Day11(exampleInput1.Split('\n'), wfa => wfa);
+            var result = sut.GetMonkeyInspections(1);
+            result[0].Should().Be(2);
+            result[1].Should().Be(4);
+            result[2].Should().Be(3);
+            result[3].Should().Be(6);
+        }
+
+        [Fact]
+        public void Part2WithSampleInputProducesDocumentedResultToRound20()
+        {
+            var sut = new Day11(exampleInput1.Split('\n'), wfa => wfa);
+            var result = sut.GetMonkeyInspections(20);
+            result[0].Should().Be(99);
+            result[1].Should().Be(97);
+            result[2].Should().Be(8);
+            result[3].Should().Be(103);
+        }
+
+        [Fact]
+        public void Part2WithSampleInputProducesDocumentedResultToRound1000()
+        {
+            var sut = new Day11(exampleInput1.Split('\n'), wfa => wfa);
+            var result = sut.GetMonkeyInspections(1000);
+            result[0].Should().Be(5204);
+            result[1].Should().Be(4792);
+            result[2].Should().Be(199);
+            result[3].Should().Be(5192);
+        }
+
+        [Fact]
+        public void Part2WithActualInputProducesCorrectResult()
+        {
+            var input = Utils.GetResourceStringFromAssembly<Day11>("day11.input.txt");
+            var sut = new Day11(input.ReplaceLineEndings("\n").Split('\n'), wfa => wfa);
+            sut.GetAnswerForPart2().Should().Be("20151213744");
         }
 
         private static readonly string exampleInput1 = """
