@@ -75,3 +75,6 @@ This one was definitely quite hard - the parsing was fairly significant, part 1 
 
 Note: This was the first time I used `BigInteger`.  Was very easy to switch to this from `int`/`long` and seemed fast enough until the numbers got ridiculous.  It's not required anymore once you know the "trick", but I am leaving it since it was fine.
 
+### Day 12:
+
+This one was another AStar challenge like last year.  I re-used the implementation from last year as a starting point, but was able to upgrade it to use generic math with .NET 7.  I'm very pleased with how it turned out, though I am sure it could be better.  I did add a shortcut feature to stop if the cost exceeds the previous best, but I kind of feel like this made the code a bit worse and it could probably be improved.  I was surprised that the result of starting from any given starting point was only 1 better than the result of starting from position `'S'`.  Oh well.
