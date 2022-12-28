@@ -3,7 +3,8 @@
     public static class LinqExtensions
     {
         /// <summary>
-        /// Partitions an <see cref="IEnumerable{T}"/> on elements which when processed with
+        /// Partitions an <see cref="IEnumerable{T}"/> into zero or more <see cref="List{T}"/>,
+        /// splitting the <paramref name="source"/> on elements which when processed with
         /// <paramref name="splitOn"/> return true.  Does not include those elements.
         /// </summary>
         public static IEnumerable<List<T>> SelectPartition<T>(
