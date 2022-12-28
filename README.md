@@ -83,7 +83,7 @@ This one was another AStar challenge like last year.  I re-used the implementati
 
 I didn't like this one from the start.  It reminded me a lot of the Snailfish math one from last year.  I wound up getting through it without too much trouble once I took a break for a few days.  Some interesting implementation details are having implemented `IComparable<T>` to enable the sorting capability, and using the `OneOf` NuGet package for the first time to lean-in to the `ArrayOrNumber` behavior.  I thought I was being clever by making an overload of the `ArrayOrNumber` which took a `JsonNode` but then DUH this is the base class of the two so it was ambiguous.  Wound up with I think a fairly decent implementation, if a bit slow (~100 ms).  I don't think permanent normalization would work; I think it'd be a lot faster if I could avoid allocating potentially multiple strings on each sort.
 
-OK I switched from parsing a new array each time to creating it in memory and it is significantly faster (a bit better than 2x at ~48ms).
+OK I switched from parsing a new array each time to creating it in memory and it is significantly faster (a bit better than 2x at ~48ms).  Parallelism on the sort doesn't seem to make a difference.
 
 ```csharp
   // old example:
