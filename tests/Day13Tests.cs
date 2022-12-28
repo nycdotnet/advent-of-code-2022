@@ -1,4 +1,5 @@
-﻿using day13;
+﻿using common;
+using day13;
 using FluentAssertions;
 using Xunit;
 
@@ -14,13 +15,53 @@ namespace tests
         }
 
         [Theory]
-        [InlineData(0, true)]
         [InlineData(1, true)]
-        public void AnalyzeExampleInputProducesDocumentedResult(int index, bool expectedAreInRightOrder)
+        [InlineData(2, true)]
+        [InlineData(3, false)]
+        [InlineData(4, true)]
+        [InlineData(5, false)]
+        [InlineData(6, true)]
+        [InlineData(7, false)]
+        [InlineData(8, false)]
+        public void AnalyzeExampleInputProducesDocumentedResult(int oneBasedIndex, bool expectedAreInRightOrder)
         {
             var sut = new Day13(exampleInput1.Split('\n'));
-            var result = Day13.Analyze(sut.Pairs[index][0], sut.Pairs[index][1]);
+            var result = Day13.AnalyzePackets(sut.Pairs[oneBasedIndex - 1][0], sut.Pairs[oneBasedIndex - 1][1]);
             result.AreInRightOrder.Should().Be(expectedAreInRightOrder);
+        }
+
+        [Fact]
+        public void Part1WithSampleInputProducesDocumentedResult()
+        {
+            var sut = new Day13(exampleInput1.Split('\n'));
+            sut.GetAnswerForPart1().Should().Be("13");
+        }
+
+        [Fact]
+        public void Part1WithActualInputProducesCorrectResult()
+        {
+            var input = Utils.GetResourceStringFromAssembly<Day13>("day13.input.txt")
+                .ReplaceLineEndings("\n")
+                .Split('\n');
+            var sut = new Day13(input);
+            sut.GetAnswerForPart1().Should().Be("5717");
+        }
+
+        [Fact]
+        public void Part2WithSampleInputProducesDocumentedResult()
+        {
+            var sut = new Day13(exampleInput1.Split('\n'));
+            sut.GetAnswerForPart2().Should().Be("140");
+        }
+
+        [Fact]
+        public void Part2WithActualInputProducesCorrectResult()
+        {
+            var input = Utils.GetResourceStringFromAssembly<Day13>("day13.input.txt")
+                .ReplaceLineEndings("\n")
+                .Split('\n');
+            var sut = new Day13(input);
+            sut.GetAnswerForPart2().Should().Be("25935");
         }
 
 

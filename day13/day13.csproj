@@ -7,6 +7,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="input.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="input.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="OneOf" Version="3.0.223" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\common\common.csproj" />
   </ItemGroup>
 

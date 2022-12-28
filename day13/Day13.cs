@@ -1,6 +1,6 @@
 ﻿using common;
-using System.ComponentModel;
-using System.Text.Json;
+using OneOf;
+using System.Diagnostics;
 using System.Text.Json.Nodes;
 
 namespace day13
@@ -9,91 +9,20 @@ namespace day13
     {
         public Day13(IEnumerable<string> input)
         {
-            Pairs = input.SelectPartition(string.IsNullOrEmpty).ToList();
+            Pairs = input
+                .SelectPartition(string.IsNullOrEmpty)
+                .Where(x => x.Count > 0)
+                .ToList();
         }
 
-        public static AnalysisResult Analyze(string leftPacket, string rightPacket)
+        public static AnalysisResult AnalyzePackets(string left, string right)
         {
-            throw new NotImplementedException();
-            //var left = JsonNode.Parse(leftPacket) as JsonArray;
-            //var right = JsonNode.Parse(rightPacket) as JsonArray;
-            //var areInRightOrder = false;
+            var leftPacket = new Day13Packet { PacketData = left };
+            var rightPacket = new Day13Packet { PacketData = right };
 
-            //if (left is null)
-            //{
-            //    throw new ArgumentNullException("Left could not be parsed as an array.");
-            //}
-            //if (right is null)
-            //{
-            //    throw new ArgumentNullException("Right could not be parsed as an array.");
-            //}
+            var result = leftPacket.CompareTo(rightPacket);
 
-            //// We are going to work with a zero-based i, but when printing index, we should add one
-            //// because the problem defines "index" to be 1-based.
-            //int i = 0;
-            //while(true)
-            //{
-            //    if (i >= left.Count)
-            //    {
-            //        throw new IndexOutOfRangeException($"One-based index {i + 1} is too big for left with Count {left.Count}.");
-            //    }
-
-            //    if (i >= right.Count)
-            //    {
-            //        throw new IndexOutOfRangeException($"One-based index {i + 1} is too big for right with Count {right.Count}.");
-            //    }
-
-            //    var leftArray = left[i] as JsonArray;
-            //    var rightArray = right[i] as JsonArray;
-
-            //    if (leftArray is not null && rightArray is not null)
-            //    {
-
-            //    }
-            //    else if (leftArray is null && rightArray is null)
-            //    {
-            //        // both are integers.
-            //        var leftNumber = left[i]!.GetValue<int>();
-            //        var rightNumber = right[i]!.GetValue<int>();
-            //        if (leftNumber == rightNumber)
-            //        {
-            //            i += 1;
-            //            continue;
-            //        }
-            //        else if (leftNumber < rightNumber)
-            //        {
-            //            areInRightOrder = true;
-            //            break;
-            //        }
-            //        else if (leftNumber > rightNumber)
-            //        {
-            //            areInRightOrder = false;
-            //            break;
-            //        }
-            //    }
-            //    else
-            //    {
-            //        throw new NotSupportedException();
-            //    }
-
-
-            //    //var leftValue = left[index - 1].GetValue<object>();
-            //    //var rightValue = right[index - 1].GetValue<object>();
-
-            //    //if (leftValue is JsonElement le && rightValue is JsonElement re)
-            //    //{
-            //    //    var leftNumber = le.GetInt32();
-            //    //    var rightNumber = re.GetInt32();
-
-
-            //    //}
-            //    //else
-            //    //{
-            //    //    throw new NotSupportedException();
-            //    //}
-            //}
-
-            //return new AnalysisResult(areInRightOrder);
+            return new AnalysisResult(AreInRightOrder: result < 0);
         }
 
         public record AnalysisResult(bool AreInRightOrder);
@@ -102,12 +31,126 @@ namespace day13
 
         public string GetAnswerForPart1()
         {
-            throw new NotImplementedException();
+            var sum = 0;
+            for (var i = 0; i < Pairs.Count; i++)
+            {
+                var analysis = AnalyzePackets(Pairs[i][0], Pairs[i][1]);
+                if (analysis.AreInRightOrder)
+                {
+                    sum += i + 1; // it's a one-based index
+                }
+            }
+            return sum.ToString();
         }
 
         public string GetAnswerForPart2()
         {
-            throw new NotImplementedException();
+            var dividerTwo = new Day13Packet { PacketData = "[[2]]" };
+            var dividerSix = new Day13Packet { PacketData = "[[6]]" };
+            var packets = new List<Day13Packet> {
+                dividerTwo,
+                dividerSix
+            };
+            packets.AddRange(
+                Pairs
+                .SelectMany(p => p)
+                .Select(p => new Day13Packet { PacketData = p }));
+
+            packets.Sort();
+
+            var indexOfDividerTwo = packets.IndexOf(dividerTwo) + 1; // one based index
+            var indexOfDividerSix = packets.IndexOf(dividerSix) + 1; // one based index
+
+            return (indexOfDividerTwo * indexOfDividerSix).ToString();
+        }
+    }
+
+    public record Day13Packet : IComparable<Day13Packet>
+    {
+        public required string PacketData { get; init; }
+
+        public int CompareTo(Day13Packet? other)
+        {
+            if (other is null)
+            {
+                // Would return 1 here to indicate that nulls go first, or -1 for nulls go last.
+                throw new ArgumentNullException(paramName: nameof(other), message: $"It is not supported to compare to a null {nameof(Day13Packet)}.");
+            }
+
+            return CompareValues(new ArrayOrNumber(JsonNode.Parse(PacketData)), new ArrayOrNumber(JsonNode.Parse(other.PacketData)));
+        }
+
+        private static int CompareValues(
+            ArrayOrNumber left,
+            ArrayOrNumber right)
+        {
+            var leftIsArray = left.TryPickT0(out var leftArray, out var leftValue);
+            var rightIsArray = right.TryPickT0(out var rightArray, out var rightValue);
+
+            return (leftIsArray, rightIsArray) switch
+            {
+                (true, true) => CompareArrays(leftArray, rightArray),
+                (true, false) => CompareValues(
+                    new ArrayOrNumber(leftArray),
+                    new ArrayOrNumber(JsonNode.Parse($"[{rightValue.GetValue<int>()}]"))),
+                (false, true) => CompareValues(
+                    new ArrayOrNumber(JsonNode.Parse($"[{leftValue.GetValue<int>()}]")),
+                    new ArrayOrNumber(rightArray)),
+                (false, false) => leftValue.GetValue<int>().CompareTo(rightValue.GetValue<int>())
+            };
+        }
+
+        static int CompareArrays(JsonArray left, JsonArray right)
+        {
+            var i = 0;
+            while (true)
+            {
+                if (left.Count > i && right.Count > i)
+                {
+                    var comparison = CompareValues(new ArrayOrNumber(left[i]), new ArrayOrNumber(right[i]));
+                    if (comparison != 0)
+                    {
+                        return comparison;
+                    }
+                }
+                else if (left.Count == right.Count)
+                {
+                    return 0;
+                }
+                else if (left.Count > right.Count)
+                {
+                    return 1;
+                }
+                else
+                {
+                    return -1;
+                }
+                i++;
+            }
+        }
+    }
+
+    public class ArrayOrNumber : OneOfBase<JsonArray, JsonValue>
+    {
+        /// <summary>
+        /// Creates an <see cref="ArrayOrNumber"/> from the <paramref name="input"/>.  The input
+        /// must be castable to a <see cref="JsonArray" /> or a <see cref="JsonValue"/> or else
+        /// this will throw.
+        /// </summary>
+        public ArrayOrNumber(JsonNode? input) : base(Wrap(input))
+        {
+        }
+
+        public static OneOf<JsonArray, JsonValue> Wrap(JsonNode? input)
+        {
+            ArgumentNullException.ThrowIfNull(input, paramName: nameof(input));
+
+            return input switch
+            {
+                JsonArray a => a,
+                JsonValue v => v,
+                _ => throw new InvalidCastException($"Expected {nameof(input)} to be a {nameof(JsonArray)} or {nameof(JsonValue)}, but it is a {input.GetType()}.")
+            };
         }
     }
 }
