@@ -78,3 +78,17 @@ Note: This was the first time I used `BigInteger`.  Was very easy to switch to t
 ### Day 12:
 
 This one was another AStar challenge like last year.  I re-used the implementation from last year as a starting point, but was able to upgrade it to use generic math with .NET 7.  I'm very pleased with how it turned out, though I am sure it could be better.  I did add a shortcut feature to stop if the cost exceeds the previous best, but I kind of feel like this made the code a bit worse and it could probably be improved.  I was surprised that the result of starting from any given starting point was only 1 better than the result of starting from position `'S'`.  The performance of today's program is also by far the worst of any of the days with a 1.1 second runtime.  Oh well.  I know I am converting back and forth between Point2d and the map chars a bit too much and that is creating a lot of unnecessary garbage, but I suspect there is a better algorithm to use to solve multiple starting points vs a single one.  Some sort of A* where it doesn't throw away the data collected, maybe.  I will have to evaluate at some point in the future.
+
+### Day 13:
+
+I didn't like this one from the start.  It reminded me a lot of the Snailfish math one from last year.  I wound up getting through it without too much trouble once I took a break for a few days.  Some interesting implementation details are having implemented `IComparable<T>` to enable the sorting capability, and using the `OneOf` NuGet package for the first time to lean-in to the `ArrayOrNumber` behavior.  I thought I was being clever by making an overload of the `ArrayOrNumber` which took a `JsonNode` but then DUH this is the base class of the two so it was ambiguous.  Wound up with I think a fairly decent implementation, if a bit slow (~100 ms).  I don't think permanent normalization would work; I think it'd be a lot faster if I could avoid allocating potentially multiple strings on each sort.
+
+OK I switched from parsing a new array each time to creating it in memory and it is significantly faster (a bit better than 2x at ~48ms).
+
+```csharp
+  // old example:
+   new ArrayOrNumber(JsonNode.Parse($"[{leftValue.GetValue<int>()}]"))
+
+   // new example:
+   new ArrayOrNumber(new JsonArray(leftValue.GetValue<int>())),
+```

@@ -12,6 +12,7 @@ using day09;
 using System.Diagnostics;
 using day11;
 using day12;
+using day13;
 
 namespace advent_of_code_2022
 {
@@ -32,6 +33,7 @@ namespace advent_of_code_2022
             ticks += GetTicksAndReport(Day10);
             ticks += GetTicksAndReport(Day11);
             ticks += GetTicksAndReport(Day12);
+            ticks += GetTicksAndReport(Day13);
 
             Console.WriteLine($"Total time elapsed: {new TimeSpan(ticks).TotalMilliseconds}ms");
         }
@@ -134,6 +136,15 @@ namespace advent_of_code_2022
             var day = new Day12(input);
             Console.WriteLine($"{day.GetType().Name} answer 1: {day.GetAnswerForPart1()}");
             day = new Day12(input);
+            Console.WriteLine($"{day.GetType().Name} answer 2: {day.GetAnswerForPart2()}");
+        }
+
+        private static void Day13()
+        {
+            var input = Utils.GetResourceStringFromAssembly<Day13>("day13.input.txt")
+                .ReplaceLineEndings("\n").Split('\n');
+            var day = new Day13(input);
+            Console.WriteLine($"{day.GetType().Name} answer 1: {day.GetAnswerForPart1()}");
             Console.WriteLine($"{day.GetType().Name} answer 2: {day.GetAnswerForPart2()}");
         }
 

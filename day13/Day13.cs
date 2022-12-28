@@ -1,6 +1,5 @@
 ﻿using common;
 using OneOf;
-using System.Diagnostics;
 using System.Text.Json.Nodes;
 
 namespace day13
@@ -92,9 +91,9 @@ namespace day13
                 (true, true) => CompareArrays(leftArray, rightArray),
                 (true, false) => CompareValues(
                     new ArrayOrNumber(leftArray),
-                    new ArrayOrNumber(JsonNode.Parse($"[{rightValue.GetValue<int>()}]"))),
+                    new ArrayOrNumber(new JsonArray(rightValue.GetValue<int>()))),
                 (false, true) => CompareValues(
-                    new ArrayOrNumber(JsonNode.Parse($"[{leftValue.GetValue<int>()}]")),
+                    new ArrayOrNumber(new JsonArray(leftValue.GetValue<int>())),
                     new ArrayOrNumber(rightArray)),
                 (false, false) => leftValue.GetValue<int>().CompareTo(rightValue.GetValue<int>())
             };
