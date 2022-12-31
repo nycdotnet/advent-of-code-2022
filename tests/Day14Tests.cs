@@ -2,6 +2,8 @@
 using day13;
 using day14;
 using FluentAssertions;
+using OneOf.Types;
+using System.ComponentModel.DataAnnotations;
 using Xunit;
 
 namespace tests
@@ -49,10 +51,16 @@ namespace tests
         {
             var sut = new Day14(exampleInput1.Split('\n'));
             var result = sut.GenerateBaseMap();
-            result.Length.Should().Be(13);
-            result.Select(line => line.Length).Distinct().Single().Should().Be(12);
-            
-            var map = string.Join('\n', result.Select(line => new string(line)));
+            result.Width.Should().Be(10);
+            result.Height.Should().Be(10);
+            result.TopLeft.columnIndex.Should().Be(2);
+            result.TopLeft.rowIndex.Should().Be(3);
+            result.TopLeftXValue.Should().Be(494);
+
+            result.Map.Length.Should().Be(13);
+            result.Map.Select(line => line.Length).Distinct().Single().Should().Be(12);
+
+            var map = string.Join('\n', result.Map.Select(line => new string(line)));
             map.Should().Be(
                 """
                   4     5  5
@@ -71,15 +79,363 @@ namespace tests
                 """.ReplaceLineEndings("\n"));
         }
 
+        private static readonly string allowFallToRight = """
+            501,3 -> 498,3 -> 498,1
+            """.ReplaceLineEndings("\n");
+
         [Fact]
-        public void GenerateBaseMapWithRealDataSeemsOk()
+        public void GenerateBaseMapWithMyExampleInputWorksAsExpected()
+        {
+            var sut = new Day14(allowFallToRight.Split('\n'));
+            var result0 = sut.GenerateBaseMap();
+            string.Join('\n', result0.Map.Select(line => new string(line))).Should().Be(
+                """
+                  4 55
+                  9 00
+                  8 01
+                0 ..+.
+                1 #...
+                2 #...
+                3 ####
+                """.ReplaceLineEndings("\n"));
+
+            var result1 = sut.Simulate(1);
+
+            string.Join('\n', result1.SandMap.Map.Select(line => new string(line))).Should().Be(
+                """
+                  4 55
+                  9 00
+                  8 01
+                0 ..+.
+                1 #...
+                2 #.o.
+                3 ####
+                """.ReplaceLineEndings("\n"));
+
+            var result2 = sut.Simulate(2);
+
+            string.Join('\n', result2.SandMap.Map.Select(line => new string(line))).Should().Be(
+                """
+                  4 55
+                  9 00
+                  8 01
+                0 ..+.
+                1 #...
+                2 #oo.
+                3 ####
+                """.ReplaceLineEndings("\n"));
+
+            var result3 = sut.Simulate(3);
+
+            string.Join('\n', result2.SandMap.Map.Select(line => new string(line))).Should().Be(
+                """
+                  4 55
+                  9 00
+                  8 01
+                0 ..+.
+                1 #...
+                2 #oo.
+                3 ####
+                """.ReplaceLineEndings("\n"));
+
+            result3.FinalOneBasedStep.AsT0.Should().Be(2);
+        }
+
+        [Fact]
+        public void IndexesOfWorksAsExpectedFromTopLeft()
+        {
+            var sut = new Day14(exampleInput1.Split('\n'));
+            var sandMap = sut.GenerateBaseMap();
+
+            var topLeftPoint = new Point2d { X = 494, Y = 0 };
+            {
+                var topLeft = sandMap.Peek(topLeftPoint);
+                topLeft.AsT0.RowIndex.Should().Be(3);
+                topLeft.AsT0.ColumnIndex.Should().Be(2);
+            }
+            {
+                var leftOfTopLeft = sandMap.Peek(topLeftPoint with { X = topLeftPoint.X - 1 });
+                leftOfTopLeft.AsT0.RowIndex.Should().Be(3);
+                leftOfTopLeft.AsT0.ColumnIndex.Should().Be(1);
+            }
+            {
+                var rightOfTopLeft = sandMap.Peek(topLeftPoint with { X = topLeftPoint.X + 1 });
+                rightOfTopLeft.AsT0.RowIndex.Should().Be(3);
+                rightOfTopLeft.AsT0.ColumnIndex.Should().Be(3);
+            }
+        }
+
+        [Fact]
+        public void IndexesOfWorksAsExpectedFromBottomLeft()
+        {
+            var sut = new Day14(exampleInput1.Split('\n'));
+            var sandMap = sut.GenerateBaseMap();
+
+            var bottomLeftPoint = new Point2d { X = 494, Y = 9 };
+            {
+                var bottomLeft = sandMap.Peek(bottomLeftPoint);
+                bottomLeft.AsT0.RowIndex.Should().Be(12);
+                bottomLeft.AsT0.ColumnIndex.Should().Be(2);
+            }
+            {
+                var leftOfBottomLeft = sandMap.Peek(bottomLeftPoint with { X = bottomLeftPoint.X - 1 });
+                leftOfBottomLeft.AsT0.RowIndex.Should().Be(12);
+                leftOfBottomLeft.AsT0.ColumnIndex.Should().Be(1);
+            }
+            {
+                var rightOfBottomLeft = sandMap.Peek(bottomLeftPoint with { X = bottomLeftPoint.X + 1 });
+                rightOfBottomLeft.AsT0.RowIndex.Should().Be(12);
+                rightOfBottomLeft.AsT0.ColumnIndex.Should().Be(3);
+            }
+            {
+                var belowBottomLeftPoint = bottomLeftPoint with { Y = bottomLeftPoint.Y + 1 };
+                var belowBottomLeft = sandMap.Peek(belowBottomLeftPoint);
+                belowBottomLeft.AsT1.Point.Should().Be(belowBottomLeftPoint);
+            }
+        }
+
+        [Fact]
+        public void IndexesOfWorksAsExpectedFromBottomRight()
+        {
+            var sut = new Day14(exampleInput1.Split('\n'));
+            var sandMap = sut.GenerateBaseMap();
+
+            var bottomRightPoint = new Point2d { X = 503, Y = 9 };
+            {
+                var bottomRight = sandMap.Peek(bottomRightPoint);
+                bottomRight.AsT0.RowIndex.Should().Be(12);
+                bottomRight.AsT0.ColumnIndex.Should().Be(11);
+            }
+            {
+                var leftOfBottomRight = sandMap.Peek(bottomRightPoint with { X = bottomRightPoint.X - 1 });
+                leftOfBottomRight.AsT0.RowIndex.Should().Be(12);
+                leftOfBottomRight.AsT0.ColumnIndex.Should().Be(10);
+            }
+            {
+                var rightOfBottomRightPoint = bottomRightPoint with { X = bottomRightPoint.X + 1 };
+                var rightOfBottomRight = sandMap.Peek(rightOfBottomRightPoint);
+                rightOfBottomRight.AsT1.Point.Should().Be(rightOfBottomRightPoint);
+            }
+            {
+                var belowBottomRightPoint = bottomRightPoint with { Y = bottomRightPoint.Y + 1 };
+                var belowBottomRight = sandMap.Peek(belowBottomRightPoint);
+                belowBottomRight.AsT1.Point.Should().Be(belowBottomRightPoint);
+            }
+        }
+
+        [Fact]
+        public void IndexesOfWorksAsExpectedFromTopRight()
+        {
+            var sut = new Day14(exampleInput1.Split('\n'));
+            var sandMap = sut.GenerateBaseMap();
+
+            var topRightPoint = new Point2d { X = 503, Y = 0 };
+            {
+                var topRight = sandMap.Peek(topRightPoint);
+                topRight.AsT0.RowIndex.Should().Be(3);
+                topRight.AsT0.ColumnIndex.Should().Be(11);
+            }
+            {
+                var leftOfTopRight = sandMap.Peek(topRightPoint with { X = topRightPoint.X - 1 });
+                leftOfTopRight.AsT0.RowIndex.Should().Be(3);
+                leftOfTopRight.AsT0.ColumnIndex.Should().Be(10);
+            }
+            {
+                var oobPoint = topRightPoint with { X = topRightPoint.X + 1 };
+                var rightOfTopRight = sandMap.Peek(oobPoint);
+                rightOfTopRight.AsT1.Point.Should().Be(oobPoint);
+            }
+        }
+
+        [Fact]
+        public void SimulatingOneUnitOfSandWorksAsExpected()
+        {
+            var sut = new Day14(exampleInput1.Split('\n'));
+            var result = sut.Simulate(1);
+
+            var diagram = string.Join('\n', result.SandMap.Map.Select(line => new string(line)));
+            diagram.Should().Be(
+                """
+                  4     5  5
+                  9     0  0
+                  4     0  3
+                0 ......+...
+                1 ..........
+                2 ..........
+                3 ..........
+                4 ....#...##
+                5 ....#...#.
+                6 ..###...#.
+                7 ........#.
+                8 ......o.#.
+                9 #########.
+                """.ReplaceLineEndings("\n"));
+
+            result.FinalOneBasedStep.AsT1.Should().BeOfType<None>();
+        }
+
+        [Fact]
+        public void SimulatingTwoUnitOfSandWorksAsExpected()
+        {
+            var sut = new Day14(exampleInput1.Split('\n'));
+            var result = sut.Simulate(2);
+
+            var diagram = string.Join('\n', result.SandMap.Map.Select(line => new string(line)));
+            diagram.Should().Be(
+                """
+                  4     5  5
+                  9     0  0
+                  4     0  3
+                0 ......+...
+                1 ..........
+                2 ..........
+                3 ..........
+                4 ....#...##
+                5 ....#...#.
+                6 ..###...#.
+                7 ........#.
+                8 .....oo.#.
+                9 #########.
+                """.ReplaceLineEndings("\n"));
+
+            result.FinalOneBasedStep.AsT1.Should().BeOfType<None>();
+        }
+
+        [Fact]
+        public void SimulatingFiveUnitOfSandWorksAsExpected()
+        {
+            var sut = new Day14(exampleInput1.Split('\n'));
+            var result = sut.Simulate(5);
+
+            var diagram = string.Join('\n', result.SandMap.Map.Select(line => new string(line)));
+            diagram.Should().Be(
+                """
+                  4     5  5
+                  9     0  0
+                  4     0  3
+                0 ......+...
+                1 ..........
+                2 ..........
+                3 ..........
+                4 ....#...##
+                5 ....#...#.
+                6 ..###...#.
+                7 ......o.#.
+                8 ....oooo#.
+                9 #########.
+                """.ReplaceLineEndings("\n"));
+
+            result.FinalOneBasedStep.AsT1.Should().BeOfType<None>();
+        }
+
+        [Fact]
+        public void SimulatingTwentyTwoUnitsOfSandWorksAsExpected()
+        {
+            var sut = new Day14(exampleInput1.Split('\n'));
+            var result = sut.Simulate(22);
+
+            var diagram = string.Join('\n', result.SandMap.Map.Select(line => new string(line)));
+            diagram.Should().Be(
+                """
+                  4     5  5
+                  9     0  0
+                  4     0  3
+                0 ......+...
+                1 ..........
+                2 ......o...
+                3 .....ooo..
+                4 ....#ooo##
+                5 ....#ooo#.
+                6 ..###ooo#.
+                7 ....oooo#.
+                8 ...ooooo#.
+                9 #########.
+                """.ReplaceLineEndings("\n"));
+
+            result.FinalOneBasedStep.AsT1.Should().BeOfType<None>();
+        }
+
+        [Fact]
+        public void SimulatingTwentyFourUnitsOfSandWorksAsExpected()
+        {
+            var sut = new Day14(exampleInput1.Split('\n'));
+            var result = sut.Simulate(24);
+
+            var diagram = string.Join('\n', result.SandMap.Map.Select(line => new string(line)));
+            diagram.Should().Be(
+                """
+                  4     5  5
+                  9     0  0
+                  4     0  3
+                0 ......+...
+                1 ..........
+                2 ......o...
+                3 .....ooo..
+                4 ....#ooo##
+                5 ...o#ooo#.
+                6 ..###ooo#.
+                7 ....oooo#.
+                8 .o.ooooo#.
+                9 #########.
+                """.ReplaceLineEndings("\n"));
+
+            result.FinalOneBasedStep.AsT1.Should().BeOfType<None>();
+        }
+
+        [Fact]
+        public void SimulatingTwentyFiveUnitsOfSandWorksAsExpected()
+        {
+            var sut = new Day14(exampleInput1.Split('\n'));
+            var result = sut.Simulate(25);
+
+            var diagram = string.Join('\n', result.SandMap.Map.Select(line => new string(line)));
+            diagram.Should().Be(
+                """
+                  4     5  5
+                  9     0  0
+                  4     0  3
+                0 ......+...
+                1 ..........
+                2 ......o...
+                3 .....ooo..
+                4 ....#ooo##
+                5 ...o#ooo#.
+                6 ..###ooo#.
+                7 ....oooo#.
+                8 .o.ooooo#.
+                9 #########.
+                """.ReplaceLineEndings("\n"));
+
+            result.FinalOneBasedStep.AsT0.Should().Be(24);
+        }
+
+        [Fact]
+        public void Part1WithSampleInputProducesDocumentedResult()
+        {
+            var sut = new Day14(exampleInput1.Split('\n'));
+            sut.GetAnswerForPart1().Should().Be("24");
+        }
+
+        [Fact]
+        public void Part1WithActualInputProducesCorrectResult()
+        {
+            var input = Utils.GetResourceStringFromAssembly<Day14>("day14.input.txt")
+                .ReplaceLineEndings("\n")
+                .Split('\n');
+            var sut = new Day14(input);
+
+            sut.GetAnswerForPart1().Should().Be("625");
+        }
+
+        [Fact]
+        public void GenerateBaseMapWithRealDataWorksAsExpected()
         {
             var input = Utils.GetResourceStringFromAssembly<Day14>("day14.input.txt")
                 .ReplaceLineEndings("\n")
                 .Split('\n');
 
             var sut = new Day14(input);
-            var result = string.Join('\n', sut.GenerateBaseMap().Select(ca => new string(ca)));
+            var result = string.Join('\n', sut.GenerateBaseMap().Map.Select(ca => new string(ca)));
             result.Should().Be(expectedRealDataBaseMap);
         }
 
@@ -118,7 +474,7 @@ namespace tests
              23 ........#####.............................................................
              24 ..........................................................................
              25 ..........................................................................
-             26 ......#...................................................................
+             26 ......#...........#.......................................................
              27 ......#############.......................................................
              28 ..........................................................................
              29 ..........................................................................
@@ -130,22 +486,22 @@ namespace tests
              35 ..........................................................................
              36 ...........#####.#####.#####..............................................
              37 ..........................................................................
-             38 #.........................................................................
+             38 #.............#...........................................................
              39 ###############...........................................................
              40 ..........................................................................
              41 ..........................................................................
-             42 .............#............................................................
-             43 .............#............................................................
-             44 .............#............................................................
+             42 .............#...#........................................................
+             43 .............#...#........................................................
+             44 .............#...#........................................................
              45 .......#######...##.......................................................
-             46 .......#..................................................................
-             47 .......#..................................................................
-             48 .......#..................................................................
-             49 .......#..................................................................
-             50 .......#..................................................................
+             46 .......#..........#.......................................................
+             47 .......#..........#.......................................................
+             48 .......#..........#.......................................................
+             49 .......#..........#.......................................................
+             50 .......#..........#.......................................................
              51 .......############.......................................................
              52 ..........................................................................
-             53 ..........#...............................................................
+             53 ..........#.........#.....................................................
              54 ..........###########.....................................................
              55 ..........................................................................
              56 ..........................................................................
@@ -164,18 +520,18 @@ namespace tests
              69 ..........................................................................
              70 ..........................................................................
              71 ..........................................................................
-             72 ..........................................................................
+             72 ...................................#......................................
              73 .........................###########......................................
              74 ..........................................................................
              75 ..........................................................................
-             76 .....................#....................................................
-             77 .....................#....................................................
+             76 .....................#.....#..............................................
+             77 .....................#.....#..............................................
              78 ..............########.....######.........................................
-             79 ..............#...........................................................
-             80 ..............#...........................................................
-             81 ..............#...........................................................
-             82 ..............#...........................................................
-             83 ..............#...........................................................
+             79 ..............#.................#.........................................
+             80 ..............#.................#.........................................
+             81 ..............#.................#.........................................
+             82 ..............#.................#.........................................
+             83 ..............#.................#.........................................
              84 ..............###################.........................................
              85 ..........................................................................
              86 ..........................................................................
@@ -192,11 +548,11 @@ namespace tests
              97 ...........................#################..............................
              98 ..........................................................................
              99 ..........................................................................
-            100 ..........................................#...............................
-            101 ..........................................#...............................
+            100 ..........................................#...#...........................
+            101 ..........................................#...#...........................
             102 ...................................########...####........................
-            103 ...................................#......................................
-            104 ...................................#......................................
+            103 ...................................#.............#........................
+            104 ...................................#.............#........................
             105 ...................................###############........................
             106 ..........................................................................
             107 ..........................................................................
@@ -225,13 +581,13 @@ namespace tests
             130 ......................................###########.........................
             131 ..........................................................................
             132 ..........................................................................
-            133 ..............................................#...........................
-            134 ..............................................#...........................
-            135 ..............................................#...........................
+            133 ..............................................#....#......................
+            134 ..............................................#....#......................
+            135 ..............................................#....#......................
             136 .........................................######....########...............
-            137 .........................................#................................
-            138 .........................................#................................
-            139 .........................................#................................
+            137 .........................................#................#...............
+            138 .........................................#................#...............
+            139 .........................................#................#...............
             140 .........................................##################...............
             141 ..........................................................................
             142 ..........................................................................
