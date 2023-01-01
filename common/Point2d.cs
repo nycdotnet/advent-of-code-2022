@@ -1,6 +1,6 @@
 ﻿namespace common
 {
-    public record Point2d
+    public sealed record Point2d
     {
         public required int X { get; set; }
         public required int Y { get; set; }

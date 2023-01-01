@@ -65,7 +65,7 @@ namespace day14
             }
         }
 
-        public static readonly Point2d SandPoursInFrom = new Point2d { X = 500, Y = 0 };
+        public static readonly Point2d SandPoursInFrom = new() { X = 500, Y = 0 };
 
         public static Point2d[] ParsePoints(string input) => input
             .Split("->")
@@ -73,17 +73,22 @@ namespace day14
             .Select(p => new Point2d { X = int.Parse(p[0]), Y = int.Parse(p[1]) })
             .ToArray();
 
-        public SandMap GenerateBaseMap()
+        public SandMap GenerateBaseMap(int part)
         {
-            var xRange = GetXRange();
-            var headerX = Math.Max(Math.Max(xRange.maxX.ToString().Length, xRange.minX.ToString().Length), SandPoursInFrom.X.ToString().Length);
-            var maxY = GetMaxY();
+            if (!(part == 1 || part == 2))
+            {
+                throw new NotSupportedException("You must specify 1 or 2 for part.");
+            }
+
+            var (minX, maxX) = GetXRange(part);
+            var headerX = Math.Max(Math.Max(maxX.ToString().Length, minX.ToString().Length), SandPoursInFrom.X.ToString().Length);
+            var maxY = GetMaxY(part);
             var headerY = maxY.ToString().Length;
 
             var result = new char[maxY + 1 + headerX][];
             for (var y = 0; y < result.Length; y++)
             {
-                result[y] = new char[xRange.maxX - xRange.minX + 2 + headerY];
+                result[y] = new char[maxX - minX + 2 + headerY];
                 Array.Fill(result[y], ' ');
             }
 
@@ -98,12 +103,22 @@ namespace day14
             }
 
             // draw sand origin
-            result[headerX][headerY + 1 + SandPoursInFrom.X - xRange.minX] = '+';
+            result[headerX][headerY + 1 + SandPoursInFrom.X - minX] = '+';
 
             // draw rock
             foreach (var rock in GetAllRockPoints())
             {
-                result[rock.Y + headerX][rock.X + headerY + 1 - xRange.minX] = '#';
+                result[rock.Y + headerX][rock.X + headerY + 1 - minX] = '#';
+            }
+
+            if (part == 2)
+            {
+                var bottomRow = result[^1];
+                // draw the rock floor.
+                for (var x = headerY + 1; x < bottomRow.Length; x++)
+                {
+                    bottomRow[x] = '#';
+                }
             }
 
             // draw Y labels
@@ -116,23 +131,24 @@ namespace day14
                 }
             }
 
-            DrawXLabel(xRange.minX);
-            DrawXLabel(xRange.maxX);
+            DrawXLabel(minX);
+            DrawXLabel(maxX);
             DrawXLabel(SandPoursInFrom.X);
 
             return new SandMap
             {
                 Map = result,
                 Height = maxY + 1,
-                Width = xRange.maxX - xRange.minX + 1,
+                Width = maxX - minX + 1,
                 TopLeft = (rowIndex: headerX, columnIndex: headerY + 1),
-                TopLeftXValue = xRange.minX
+                TopLeftXValue = minX,
+                Part = part
             };
 
             void DrawXLabel(int number)
             {
                 var label = number.ToString().PadLeft(headerX, ' ').AsSpan();
-                var columnOffset = headerY + 1 + (number - xRange.minX);
+                var columnOffset = headerY + 1 + (number - minX);
                 for (var i = 0; i < label.Length; i++)
                 {
                     result[i][columnOffset] = label[i];
@@ -140,15 +156,16 @@ namespace day14
             }
         }
 
-        public (int minX, int maxX) GetXRange() => (
-            minX: InitialPoints.Select(p => p.Min(x => x.X)).Min(),
-            maxX: InitialPoints.Select(p => p.Max(x => x.X)).Max());
+        public (int minX, int maxX) GetXRange(int part) => (
+            minX: InitialPoints.Select(p => p.Min(x => x.X)).Min() - (part == 2 ? SandPoursInFrom.X * 3 : 0),
+            maxX: InitialPoints.Select(p => p.Max(x => x.X)).Max() + (part == 2 ? SandPoursInFrom.X * 3 : 0));
 
-        public int GetMaxY() => InitialPoints.Select(p => p.Max(y => y.Y)).Max();
+        public int GetMaxY(int part) => InitialPoints.Select(p => p.Max(y => y.Y)).Max() + (part == 2 ? 2 : 0);
 
         public string GetAnswerForPart1()
         {
-            var result = SimulateContinuously();
+            var map = GenerateBaseMap(1);
+            var result = SimulateContinuously(map);
             return result.FinalOneBasedStep.Match(
                 finalOneBasedStep => finalOneBasedStep.ToString(),
                 _ => "Did not finish");
@@ -156,26 +173,26 @@ namespace day14
 
         public string GetAnswerForPart2()
         {
-            throw new NotImplementedException();
+            var map = GenerateBaseMap(2);
+            var result = SimulateContinuously(map);
+            return result.FinalOneBasedStep.Match(
+                finalOneBasedStep => finalOneBasedStep.ToString(),
+                _ => "Did not finish");
         }
 
-        public record struct SimulateResult
+        public readonly record struct SimulateResult
         {
             public required SandMap SandMap { get; init; }
             public required OneOf<int, None> FinalOneBasedStep { get; init; }
         }
 
-        public SimulateResult SimulateContinuously()
-        {
-            return Simulate(int.MaxValue);
-        }
+        public static SimulateResult SimulateContinuously(SandMap sandMap) => Simulate(int.MaxValue, sandMap);
 
         /// <summary>
         /// Returns a map of the final state after simulating for <paramref name="sandCount"/> sand drops.
         /// </summary>
-        public SimulateResult Simulate(int sandCount)
+        public static SimulateResult Simulate(int sandCount, SandMap sandMap)
         {
-            var sandMap = GenerateBaseMap();
             InBounds sandLocation = sandMap.Peek(SandPoursInFrom with { }).AsT0;
 
             for (var sandIndex = 0; sandIndex < sandCount; sandIndex++)
@@ -184,15 +201,27 @@ namespace day14
                 OneOf<ComesToRest, FallsForever> finalDisposition;
                 while (result.TryPickT0(out FallsTo fallsTo, out finalDisposition))
                 {
+                    // the sand fell so we can simulate another step.
                     result = SimulateStep(sandMap, fallsTo.NewLocation);
                 }
 
                 if (finalDisposition.TryPickT1(out FallsForever _, out ComesToRest comesToRest))
                 {
+                    if (sandMap.Part == 2)
+                    {
+                        throw new NotSupportedException("We are not supposed to get a falls forever result in part 2.");
+                    }
+
+                    // NOTE: We don't add one here because we want to indicate that the PREVIOUS one came to rest.
                     return new SimulateResult { SandMap = sandMap, FinalOneBasedStep = sandIndex };
                 }
 
                 sandMap.MarkSandComesToRest(comesToRest.FinalLocation);
+
+                if (comesToRest.FinalLocation.Point == SandPoursInFrom)
+                {
+                    return new SimulateResult { SandMap = sandMap, FinalOneBasedStep = sandIndex + 1 };
+                }
             }
             return new SimulateResult { SandMap = sandMap, FinalOneBasedStep = new None() };
         }
@@ -238,35 +267,8 @@ namespace day14
                 );
             }
 
-
-
-            //if (map.PeekDown(startSandLocation.Point).TryPickT0(out var foundDown, out var downOob) && foundDown.State == '.')
-            //{
-            //    return new FallsTo { NewLocation = foundDown };
-            //}
-            //if (map.PeekDownLeft(startSandLocation.Point).TryPickT0(out var foundDownLeft, out var downLeftOob) && foundDownLeft.State == '.')
-            //{
-            //    return new FallsTo { NewLocation = foundDownLeft };
-            //}
-            //if (map.PeekDownRight(startSandLocation.Point).TryPickT0(out var foundDownRight, out var downRightOob) && foundDownRight.State == '.')
-            //{
-            //    return new FallsTo { NewLocation = foundDownRight };
-            //}
-            //else
-            //{
-            //    if ()
-            //}
-
-            //if (IsBlocked(foundDown.State) && IsBlocked(foundDownLeft.State) && IsBlocked(foundDownRight.State))
-            //{
-            //    return new ComesToRest { FinalLocation = startSandLocation };
-            //}
-
-            // maybe?
             return new ComesToRest { FinalLocation = startSandLocation };
-            //return new FallsForever();
 
-            //bool IsBlocked(char next) => next == 'o' || next == '#';
             static OneOf<Blocked, Air, FallsForever> MapInBounds(InBounds ib) => ib.State switch
             {
                 '.' => new Air { InBoundsLocation = ib },
@@ -277,7 +279,7 @@ namespace day14
         }
     }
 
-    public record SandMap
+    public sealed record SandMap
     {
         public required char[][] Map { get; init; }
         /// <summary>
@@ -290,6 +292,20 @@ namespace day14
         public required int TopLeftXValue { get; init; }
         public required int Width { get; init; }
         public required int Height { get; init; }
+
+        private int _part;
+        public required int Part {
+            get => _part;
+            set {
+                if (value != 1 && value != 2)
+                {
+                    throw new NotSupportedException("Part must be 1 or 2");
+                }
+                _part = value;
+            }
+        }
+
+        public string RenderToString() => string.Join('\n', Map.Select(line => new string(line)));
 
         /// <summary>
         /// Maps the <paramref name="point"/> in 2D space to the row and column index
@@ -310,61 +326,6 @@ namespace day14
         public OneOf<InBounds, OutOfBounds> PeekDown(Point2d @from) => Peek(@from with { Y = @from.Y + 1 });
         public OneOf<InBounds, OutOfBounds> PeekDownLeft(Point2d @from) => Peek(@from with { Y = @from.Y + 1, X = @from.X - 1 });
         public OneOf<InBounds, OutOfBounds> PeekDownRight(Point2d @from) => Peek(@from with { Y = @from.Y + 1, X = @from.X + 1 });
-
-
-        // public OneOf<char, OutOfBounds, FallForever> PeekDown(Point2d from)
-        // {
-        //     if (IndexesOf(from).TryPickT0(out var indices, out var remainder))
-        //     {
-        //         var next = Map[indices.rowIndex + 1][indices.columnIndex];
-        //         if (next == ' ')
-        //         {
-        //             return new FallForever();
-        //         }
-        //         return next;
-        //     }
-        //     if (remainder.TryPickT0(out var oob, out var fallForever)) {
-        //         return oob;
-        //     }
-        //     return fallForever;
-        //}
-
-        // public OneOf<char, OutOfBounds, FallForever> PeekDownLeft(Point2d from)
-        // {
-        //     if (IndexesOf(from).TryPickT0(out var indices, out var remainder))
-        //     {
-        //         var next = Map[indices.rowIndex + 1][indices.columnIndex - 1];
-        //         if (next == ' ')
-        //         {
-        //             return new FallForever();
-        //         }
-        //         return next;
-        //     }
-        //     if (remainder.TryPickT0(out var oob, out var fallForever))
-        //     {
-        //         return oob;
-        //     }
-        //     return fallForever;
-        // }
-
-        // public OneOf<char, OutOfBounds, FallForever> PeekDownRight(Point2d from)
-        // {
-        //     if (IndexesOf(from).TryPickT0(out var indices, out var remainder))
-        //     {
-        //         var next = Map[indices.rowIndex + 1][indices.columnIndex + 1];
-        //         if (next == ' ')
-        //         {
-        //             return new FallForever();
-        //         }
-        //         return next;
-        //     }
-        //     if (remainder.TryPickT0(out var oob, out var fallForever))
-        //     {
-        //         return oob;
-        //     }
-        //     return fallForever;
-        // }
-
         internal void MarkSandComesToRest(InBounds location)
         {
             Map[location.RowIndex][location.ColumnIndex] = 'o';
@@ -372,21 +333,21 @@ namespace day14
     }
 
     public struct Blocked { }
-    public struct Air {
+    public readonly struct Air {
         public required InBounds InBoundsLocation { get; init; }
     }
 
     /// <summary>
     /// Indicates that the specified point is out of bounds of the visualized array.
     /// </summary>
-    public struct OutOfBounds {
+    public readonly struct OutOfBounds {
         public required Point2d Point { get; init; }
     }
 
     /// <summary>
     /// Indicates that the specified point is in bounds of the visualized array
     /// </summary>
-    public struct InBounds
+    public readonly struct InBounds
     {
         public required int RowIndex { get; init; }
         public required int ColumnIndex { get; init; }
@@ -400,18 +361,23 @@ namespace day14
     public struct FallsForever { }
 
     /// <summary>
+    /// Indicates that the sand got stuck at the origin.
+    /// </summary>
+    //public struct GetsStuck { }
+
+    /// <summary>
     /// Indicates that the sand comes to rest at the specified coordinates
     /// </summary>
-    public struct ComesToRest
+    public readonly struct ComesToRest
     {
-        public required InBounds FinalLocation { get; set; }
+        public required InBounds FinalLocation { get; init; }
     }
 
     /// <summary>
     /// Indicates that the sand fell to <see cref="NewLocation"/> and that it has not yet come to rest.
     /// </summary>
-    public struct FallsTo
+    public readonly struct FallsTo
     {
-        public required InBounds NewLocation { get; set; }
+        public required InBounds NewLocation { get; init; }
     }
 }
