@@ -1,9 +1,16 @@
 ﻿using System.Reflection;
+using System.Runtime.Versioning;
+using Clowd.Clipboard;
 
 namespace common
 {
     public static class Utils
     {
+        [SupportedOSPlatform("windows")]
+        public static void CopyToClipboard(string content)
+        {
+            ClipboardGdi.SetText(content);
+        }
         public static IEnumerable<int> GetInputAsIntegers(string fileName) => GetLines(fileName)
             .Where(x => !string.IsNullOrWhiteSpace(x))
             .Select(int.Parse);

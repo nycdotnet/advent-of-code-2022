@@ -6,4 +6,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Clowd.Clipboard" Version="1.0.1" />
+    <PackageReference Include="Clowd.Clipboard.Gdi" Version="1.0.1" />
+  </ItemGroup>
+
 </Project>
