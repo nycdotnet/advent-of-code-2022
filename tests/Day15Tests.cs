@@ -1,4 +1,6 @@
-﻿using day15;
+﻿using common;
+using day14;
+using day15;
 using FluentAssertions;
 using Xunit;
 
@@ -26,6 +28,179 @@ namespace tests
             sut.Grid.MinX.Should().Be(-2);
             sut.Grid.MaxY.Should().Be(22);
             sut.Grid.MinY.Should().Be(0);
+        }
+
+        [Fact]
+        public void DrawingBeaconAbsencesWorksAsExpected()
+        {
+            var sut = new Day15(exampleInput1.Split('\n'));
+            var sensor = sut.Sensors.Where(s => s.Position.X == 8 && s.Position.Y == 7).Single();
+            sut.MarkBeaconAbsence(sensor);
+
+            var result = sut.Grid.RenderToStringWithInvertedY();
+
+            result.startX.Should().Be(-2);
+            result.startY.Should().Be(-2);
+            result.endX.Should().Be(25);
+            result.endY.Should().Be(22);
+
+            result.content.Should().Be("""
+                ..........#.................
+                .........###................
+                ....S...#####...............
+                .......#######........S.....
+                ......#########S............
+                .....###########SB..........
+                ....#############...........
+                ...###############..........
+                ..#################.........
+                .#########S#######S#........
+                ..#################.........
+                ...###############..........
+                ....B############...........
+                ..S..###########............
+                ......#########.............
+                .......#######..............
+                ........#####.S.......S.....
+                B........###................
+                ..........#SB...............
+                ................S..........B
+                ....S.......................
+                ............................
+                ............S......S........
+                ............................
+                .......................B....
+                """.ReplaceLineEndings("\n"));
+        }
+
+        [Fact]
+        public void Part1WithSampleInputProducesDocumentedResult()
+        {
+            var sut = new Day15(exampleInput1.Split('\n'));
+            sut.MarkAllBeaconAbsences();
+            sut.GetCountOfPositionsWhereBeaconCanNotBePresentInRow(10).Should().Be(26);
+        }
+
+        [Fact]
+        public void RangeSetCanBeCreatedAndBasicInclusionsWork()
+        {
+            var rs = new RangeSet();
+            rs.Include(10, 12);
+            rs.GetState(9).Should().Be(RangeSet.State.Unspecified);
+            rs.GetState(10).Should().Be(RangeSet.State.Included);
+            rs.GetState(11).Should().Be(RangeSet.State.Included);
+            rs.GetState(12).Should().Be(RangeSet.State.Included);
+            rs.GetState(13).Should().Be(RangeSet.State.Unspecified);
+        }
+
+        [Fact]
+        public void RangeSetOverlappingInclusionsWhenNewStartsLowerWillBeMerged()
+        {
+            var rs = new RangeSet();
+            rs.Include(5, 10);
+            rs.Include(4, 5);
+            for (var i = 4; i <= 10; i++)
+            {
+                rs.GetState(i).Should().Be(RangeSet.State.Included);
+            }
+        }
+
+        [Fact]
+        public void RangeSetOverlappingInclusionsWhenNewStartsInMiddleAndEndsHigherWillBeMerged()
+        {
+            var rs = new RangeSet();
+            rs.Include(5, 10);
+            rs.Include(10, 11);
+
+            rs.Include(15, 15);
+            rs.Include(15, 16);
+
+            for (var i = 5; i <= 10; i++)
+            {
+                rs.GetState(i).Should().Be(RangeSet.State.Included);
+            }
+
+            for (var i = 15; i <= 16; i++)
+            {
+                rs.GetState(i).Should().Be(RangeSet.State.Included);
+            }
+        }
+
+        [Fact]
+        public void RangeSetOverlappingInclusionsWhenNewStartsInsideWillNotBeMergedButCannotTell()
+        {
+            var rs = new RangeSet();
+            rs.Include(5, 10);
+            rs.IncludedRangeCount.Should().Be(1);
+            rs.Include(5, 10);
+            rs.IncludedRangeCount.Should().Be(1);
+            rs.Include(5, 9);
+            rs.IncludedRangeCount.Should().Be(1);
+            rs.Include(6, 10);
+            rs.IncludedRangeCount.Should().Be(1);
+            rs.Include(6, 9);
+            rs.IncludedRangeCount.Should().Be(1);
+
+            rs.GetState(4).Should().Be(RangeSet.State.Unspecified);
+            for (var i = 5; i <= 10; i++)
+            {
+                rs.GetState(i).Should().Be(RangeSet.State.Included);
+            }
+            rs.GetState(11).Should().Be(RangeSet.State.Unspecified);
+        }
+
+
+        [Fact]
+        public void RangeSetCanBeCreatedAndBasicExclusionsWork()
+        {
+            var rs = new RangeSet();
+            rs.Exclude(10, 12);
+            rs.GetState(9).Should().Be(RangeSet.State.Unspecified);
+            rs.GetState(10).Should().Be(RangeSet.State.Excluded);
+            rs.GetState(11).Should().Be(RangeSet.State.Excluded);
+            rs.GetState(12).Should().Be(RangeSet.State.Excluded);
+            rs.GetState(13).Should().Be(RangeSet.State.Unspecified);
+        }
+
+        [Fact]
+        public void RangeSetCanHandleMultipleInclusionsAndExclusions()
+        {
+            var rs = new RangeSet();
+            rs.Include(2, 3);
+            rs.Exclude(4, 5);
+            rs.Include(6, 7);
+            rs.Exclude(8, 9);
+            rs.GetState(1).Should().Be(RangeSet.State.Unspecified);
+            rs.GetState(2).Should().Be(RangeSet.State.Included);
+            rs.GetState(3).Should().Be(RangeSet.State.Included);
+            rs.GetState(4).Should().Be(RangeSet.State.Excluded);
+            rs.GetState(5).Should().Be(RangeSet.State.Excluded);
+            rs.GetState(6).Should().Be(RangeSet.State.Included);
+            rs.GetState(7).Should().Be(RangeSet.State.Included);
+            rs.GetState(8).Should().Be(RangeSet.State.Excluded);
+            rs.GetState(9).Should().Be(RangeSet.State.Excluded);
+            rs.GetState(10).Should().Be(RangeSet.State.Unspecified);
+        }
+
+        [Fact]
+        public void RangeSetCanHandleReallyBigRangesFast()
+        {
+            var rs = new RangeSet();
+            rs.Include(-999_999_999, 999_999_999);
+            rs.Exclude(1_000_000_000, 2_000_000_000);
+            rs.GetState(-888_888_888).Should().Be(RangeSet.State.Included);
+            rs.GetState(2_000_000_000).Should().Be(RangeSet.State.Excluded);
+        }
+
+        [Fact]
+        public void Part1WithActualInputProducesCorrectResult()
+        {
+            var input = Utils.GetResourceStringFromAssembly<Day15>("day15.input.txt")
+                .ReplaceLineEndings("\n")
+                .Split('\n');
+
+            var sut = new Day15(input);
+            sut.GetAnswerForPart1().Should().Be("0");
         }
 
         [Fact]
@@ -69,13 +244,18 @@ namespace tests
             sut.Push('#', -1, -1);
             sut.Push('@', -1, -1);
 
-            var result = sut.RenderToString();
-            result.Should().Be("""
+            var result = sut.RenderToStringWithInvertedY();
+            result.content.Should().Be("""
                 @...
                 .%..
                 ..o.
                 ..*+
                 """.ReplaceLineEndings("\n"));
+
+            result.startX.Should().Be(-1);
+            result.startY.Should().Be(-1);
+            result.endX.Should().Be(2);
+            result.endY.Should().Be(2);
 
             static char RenderOriginAsPercent(int x, int y, char c)
             {
@@ -91,8 +271,8 @@ namespace tests
         public void RenderingTwoDimensionalGridWithExampleDataToStringWorksAsExpected()
         {
             var sut = new Day15(exampleInput1.Split('\n'));
-            var result = sut.Grid.RenderToString();
-            result.Should().Be("""
+            var result = sut.Grid.RenderToStringWithInvertedY();
+            result.content.Should().Be("""
                 ....S.......................
                 ......................S.....
                 ...............S............
