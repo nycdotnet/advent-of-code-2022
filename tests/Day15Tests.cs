@@ -183,6 +183,50 @@ namespace tests
         }
 
         [Fact]
+        public void RangeInclusionsAfterBigExclusionWorkAsExpected()
+        {
+            var rs = new RangeSet();
+            rs.Exclude(1, 10);
+            rs.Include(0, 2);
+            rs.Include(4, 5);
+            rs.Include(9, 10);
+
+            rs.GetState(0).Should().Be(RangeSet.State.Included);
+            rs.GetState(1).Should().Be(RangeSet.State.Included);
+            rs.GetState(2).Should().Be(RangeSet.State.Included);
+            rs.GetState(3).Should().Be(RangeSet.State.Excluded);
+            rs.GetState(4).Should().Be(RangeSet.State.Included);
+            rs.GetState(5).Should().Be(RangeSet.State.Included);
+            rs.GetState(6).Should().Be(RangeSet.State.Excluded);
+            rs.GetState(7).Should().Be(RangeSet.State.Excluded);
+            rs.GetState(8).Should().Be(RangeSet.State.Excluded);
+            rs.GetState(9).Should().Be(RangeSet.State.Included);
+            rs.GetState(10).Should().Be(RangeSet.State.Included);
+        }
+
+        [Fact]
+        public void RangeExclusionsAfterBigInclusionWorkAsExpected()
+        {
+            var rs = new RangeSet();
+            rs.Include(1, 10);
+            rs.Exclude(0, 2);
+            rs.Exclude(4, 5);
+            rs.Exclude(9, 10);
+
+            rs.GetState(0).Should().Be(RangeSet.State.Excluded);
+            rs.GetState(1).Should().Be(RangeSet.State.Excluded);
+            rs.GetState(2).Should().Be(RangeSet.State.Excluded);
+            rs.GetState(3).Should().Be(RangeSet.State.Included);
+            rs.GetState(4).Should().Be(RangeSet.State.Excluded);
+            rs.GetState(5).Should().Be(RangeSet.State.Excluded);
+            rs.GetState(6).Should().Be(RangeSet.State.Included);
+            rs.GetState(7).Should().Be(RangeSet.State.Included);
+            rs.GetState(8).Should().Be(RangeSet.State.Included);
+            rs.GetState(9).Should().Be(RangeSet.State.Excluded);
+            rs.GetState(10).Should().Be(RangeSet.State.Excluded);
+        }
+
+        [Fact]
         public void RangeSetCanHandleReallyBigRangesFast()
         {
             var rs = new RangeSet();

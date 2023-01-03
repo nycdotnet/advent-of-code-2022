@@ -248,21 +248,76 @@ namespace day15
                 _included.Add(bottom, top);
             }
 
-            TrimOverlapping(_excluded, bottom, top);
+            TrimOverlappingInverse(_excluded, bottom, top);
         }
 
-        private static void TrimOverlapping(SortedList<int, int> list, int bottom, int top)
+        private static void TrimOverlappingInverse(SortedList<int, int> list, int bottom, int top)
         {
+            // this should binary search to find the right start point.
+            for (var i = 0; i < list.Count; i++)
+            {
+                var existingBottom = list.GetKeyAtIndex(i);
+                if (existingBottom > top)
+                {
+                    // no need to search anymore.
+                    return;
+                }
 
+                var existingTop = list[existingBottom];
+                if (existingTop < bottom)
+                {
+                    continue;
+                }
+
+                // there is some kind of overlap.  Fix and test again.
+                i--;
+
+                if (bottom <= existingBottom && top < existingTop)
+                {
+                    // hanging off the bottom.  We need to change this one to
+                    // start after the top.
+                    list.Remove(existingBottom);
+                    list.Add(top + 1, existingTop);
+                }
+                else if (existingBottom <= bottom && existingTop >= top)
+                {
+                    // bottom = 4, top = 5
+                    // existing bottom = 3, existing top == 10
+                    list.Remove(existingBottom);
+
+                    // we need to split this one.
+                    if (bottom > existingBottom)
+                    {
+                        list.Add(existingBottom, bottom - 1);
+                    }
+                    if (existingTop > top)
+                    {
+                        list.Add(top + 1, existingTop);
+                    }
+                }
+                else if (existingBottom <= bottom && existingTop <= top)
+                {
+                    // this is hanging off the top.
+                    // we need to change the start to be after the top.
+                    list[existingBottom] = top + 1;
+                }
+                else
+                {
+                    Debug.Assert(bottom <= existingBottom && top >= existingTop);
+                    // this range totally overlaps, so we can just eliminate this entry.
+                    list.Remove(existingBottom);
+                }
+            }
         }
 
         private static bool TryMergeIntoExisting(SortedList<int, int> list, int bottom, int top)
         {
+            var mergeSuccess = false;
+
+            // this should binary search to find the right start point.
             for (var i = 0; i < list.Count; i++)
             {
                 var existingBottom = list.GetKeyAtIndex(i);
-
-                // note this could probably be further optimized for reads by consolidating touching ranges.
                 if (existingBottom > top)
                 {
                     // no need to search anymore.
@@ -276,21 +331,25 @@ namespace day15
 
                 if (bottom >= existingBottom && top <= existingTop)
                 {
-                    // this is entirely in the existing included range, so we can ignore.
-                    return true;
+                    // this is entirely in the existing included range, so we can do nothing
+                    // and consider it merged.
+                    mergeSuccess = true;
+                    continue;
                 }
                 else if (bottom <= existingBottom && top <= existingTop)
                 {
-                    // new range hangs below.  Need a new entry.
+                    // new range hangs below.  Need to replace this entry.
                     list.RemoveAt(i);
                     list.Add(bottom, existingTop);
-                    return true;
+                    mergeSuccess = true;
+                    continue;
                 }
                 else if (bottom >= existingBottom && top >= existingTop)
                 {
                     // new range hangs above.  Need to extend existing entry.
                     list[existingBottom] = top;
-                    return true;
+                    mergeSuccess = true;
+                    continue;
                 }
                 else
                 {
@@ -298,13 +357,12 @@ namespace day15
                     // this range totally overlaps, so we need a new entry.
                     list.RemoveAt(i);
                     list.Add(bottom, top);
-                    return true;
+                    mergeSuccess = true;
+                    continue;
                 }
             }
-            return false;
+            return mergeSuccess;
         }
-
-        
 
         public void Exclude(int bottom, int top)
         {
@@ -313,7 +371,13 @@ namespace day15
                 throw new ArgumentException(message: "Argument top must be greater than or equal to bottom.");
             }
 
-            _excluded.Add(bottom, top);
+
+            if (!TryMergeIntoExisting(_excluded, bottom, top))
+            {
+                _excluded.Add(bottom, top);
+            }
+
+            TrimOverlappingInverse(_included, bottom, top);
         }
 
         public int IncludedRangeCount => _included.Count;
