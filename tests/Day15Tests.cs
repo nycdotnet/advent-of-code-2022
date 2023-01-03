@@ -259,6 +259,31 @@ namespace tests
         }
 
         [Fact]
+        public void ExcludingOneOffTheBottomWorks()
+        {
+            var rs = new RangeSet();
+            rs.Include(2, 3);
+            rs.Exclude(2, 2);
+            
+            rs.GetState(1).Should().Be(RangeSet.State.Unspecified);
+            rs.GetState(2).Should().Be(RangeSet.State.Excluded);
+            rs.GetState(3).Should().Be(RangeSet.State.Included);
+            rs.GetState(4).Should().Be(RangeSet.State.Unspecified);
+        }
+
+        [Fact]
+        public void ExcludingOneOffTheTopWorks()
+        {
+            var rs = new RangeSet();
+            rs.Include(2, 3);
+            rs.Exclude(3, 3);
+
+            rs.GetState(2).Should().Be(RangeSet.State.Included);
+            rs.GetState(3).Should().Be(RangeSet.State.Excluded);
+            rs.GetState(4).Should().Be(RangeSet.State.Unspecified);
+        }
+
+        [Fact]
         public void RangeSetCanHandleReallyBigRangesFast()
         {
             var rs = new RangeSet();
