@@ -277,7 +277,7 @@ namespace day15
                     // hanging off the bottom.  We need to change this one to
                     // start after the top.
                     list.Remove(existingBottom);
-                    list.Add(top + 1, existingTop);
+                    list.TryAdd(top + 1, existingTop);
                 }
                 else if (existingBottom <= bottom && existingTop >= top)
                 {

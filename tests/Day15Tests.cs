@@ -227,6 +227,38 @@ namespace tests
         }
 
         [Fact]
+        public void RangeInclusionAfterSmallerExclusionsWorkAsExpected()
+        {
+            var rs = new RangeSet();
+            rs.Exclude(1, 2);
+            rs.Exclude(4, 5);
+            rs.Exclude(7, 8);
+            rs.Include(2, 7);
+
+            rs.GetState(1).Should().Be(RangeSet.State.Excluded);
+            rs.GetState(2).Should().Be(RangeSet.State.Included);
+            rs.GetState(3).Should().Be(RangeSet.State.Included);
+            rs.GetState(4).Should().Be(RangeSet.State.Included);
+            rs.GetState(5).Should().Be(RangeSet.State.Included);
+            rs.GetState(6).Should().Be(RangeSet.State.Included);
+            rs.GetState(7).Should().Be(RangeSet.State.Included);
+            rs.GetState(8).Should().Be(RangeSet.State.Excluded);
+        }
+
+        [Fact]
+        public void ExcludingAdjacentDoesNotImpactIncluded()
+        {
+            var rs = new RangeSet();
+            rs.Include(2, 3);
+            rs.Exclude(1, 1);
+            rs.Exclude(4, 4);
+            rs.GetState(1).Should().Be(RangeSet.State.Excluded);
+            rs.GetState(2).Should().Be(RangeSet.State.Included);
+            rs.GetState(3).Should().Be(RangeSet.State.Included);
+            rs.GetState(4).Should().Be(RangeSet.State.Excluded);
+        }
+
+        [Fact]
         public void RangeSetCanHandleReallyBigRangesFast()
         {
             var rs = new RangeSet();
