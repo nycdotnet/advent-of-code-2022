@@ -14,6 +14,7 @@ using day11;
 using day12;
 using day13;
 using day14;
+using day15;
 
 namespace advent_of_code_2022
 {
@@ -36,6 +37,7 @@ namespace advent_of_code_2022
             ticks += GetTicksAndReport(Day12);
             ticks += GetTicksAndReport(Day13);
             ticks += GetTicksAndReport(Day14);
+            ticks += GetTicksAndReport(Day15);
 
             Console.WriteLine($"Total time elapsed: {new TimeSpan(ticks).TotalMilliseconds}ms");
         }
@@ -155,6 +157,18 @@ namespace advent_of_code_2022
             var input = Utils.GetResourceStringFromAssembly<Day14>("day14.input.txt")
                 .ReplaceLineEndings("\n").Split('\n');
             var day = new Day14(input);
+            Console.WriteLine($"{day.GetType().Name} answer 1: {day.GetAnswerForPart1()}");
+            Console.WriteLine($"{day.GetType().Name} answer 2: {day.GetAnswerForPart2()}");
+        }
+
+        private static void Day15()
+        {
+            var input = Utils.GetResourceStringFromAssembly<Day15>("day15.input.txt")
+                .ReplaceLineEndings("\n").Split('\n');
+
+            var day = new Day15(input);
+            day.RowSearchYOffset = 2000000;
+            day.BeaconScanMaximumCoordinate = 4_000_000;
             Console.WriteLine($"{day.GetType().Name} answer 1: {day.GetAnswerForPart1()}");
             Console.WriteLine($"{day.GetType().Name} answer 2: {day.GetAnswerForPart2()}");
         }
