@@ -92,3 +92,11 @@ OK I switched from parsing a new array each time to creating it in memory and it
    // new example:
    new ArrayOrNumber(new JsonArray(leftValue.GetValue<int>())),
 ```
+
+### Day 14:
+
+Falling sand simulation - I did this one a while ago and don't have clear memories of it.  I do recall having a bug that didn't manifest with the test data which was pretty annoying, but proper limits testing eventually helped me figure it out.
+
+### Day 15:
+
+Eliminating areas and finding something based on [where it isn't](https://www.youtube.com/watch?v=bZe5J8SVCYQ).  This one seemed pretty easy but solving it by drawing all the places where it couldn't be (like in the visualization of the problem) wound up being way too computationally expensive (and memory expensive as well) with the big numbers in the sample data.  Switching to a range-based one that only handled x-offsets on a row at a time worked much better.  This was one of those problems where parallelism did actually help toward the end - with my data on my laptop, solving the problem takes about 400ms in release mode with the parallelism.  I made a `RangeSet` class which helps with the overlapping includes and excludes which wound up being useful, but it's not clear to me if it would be generally useful in its current form.  This was my first time using a SortedList which I was suprised to find is kind of more like a Dictionary.
