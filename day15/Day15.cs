@@ -1,11 +1,7 @@
 ﻿using common;
-using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Diagnostics;
-using System.Drawing;
 using System.Numerics;
-using System.Reflection.Metadata.Ecma335;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -28,6 +24,11 @@ namespace day15
         public List<Sensor> Sensors { get; }
         public TwoDimensionalGrid<char, int> Grid { get; }
 
+        public int RowSearchYOffset { get; set; }
+        public int BeaconScanMinimumCoordinate { get; set; }
+        public int BeaconScanMaximumCoordinate { get; set; }
+
+
         public void MarkBeaconAbsence(Sensor sensor)
         {
             var dist = sensor.Position.ManhattanDistance(sensor.ClosestBeacon);
@@ -38,6 +39,7 @@ namespace day15
             }
 
             var xRange = -1;
+            // this loop will mark a broadening triangle
             for (var y = sensor.Position.Y - dist; y <= sensor.Position.Y; y++)
             {
                 xRange++;
@@ -60,10 +62,7 @@ namespace day15
 
         public string GetAnswerForPart1()
         {
-
-
-
-            return "fail!!!";
+            return CountPositionsThatCannotContainABeaconAtY(RowSearchYOffset).ToString();
         }
 
         public void MarkAllBeaconAbsences()
@@ -74,14 +73,108 @@ namespace day15
             }
         }
 
-        public int CalculateCountOfPositionsWhereBeaconCanNotBePresentInRow(int YValue)
+        public int CountPositionsThatCannotContainABeaconAtY(int y)
         {
+            var definitelyNoBeacons = new RangeSet();
+            var definitelyBeaconXValues = new HashSet<int>();
+
             foreach(var sensor in Sensors)
             {
+                if (sensor.Position.Y == y)
+                {
+                    definitelyNoBeacons.Exclude(sensor.Position.X, sensor.Position.X);
+                }
 
+                var mdToClosestBeacon = sensor.Position.ManhattanDistance(sensor.ClosestBeacon);
+                var distanceToY = Math.Abs(sensor.Position.Y - y);
+
+                var exclusionMagnitude = mdToClosestBeacon - distanceToY + 1;
+                if (exclusionMagnitude <= 0)
+                {
+                    continue;
+                }
+
+                if (sensor.ClosestBeacon.Y == y)
+                {
+                    // we exclude the possibility of a beacon anywhere it can reach on y
+                    // we include that there is something at the position of the known beacon
+                    
+                    var rs = new RangeSet();
+                    rs.Exclude(sensor.Position.X - exclusionMagnitude + 1, sensor.Position.X + exclusionMagnitude - 1);
+                    rs.Include(sensor.ClosestBeacon.X, sensor.ClosestBeacon.X);
+
+                    foreach (var r in rs.ExcludedRanges)
+                    {
+                        definitelyNoBeacons.Exclude(r.bottom, r.top);
+                    }
+
+                    definitelyBeaconXValues.Add(sensor.ClosestBeacon.X);
+                }
+                else
+                {
+                    // we exclude the possibility of a beacon anywhere it can reach on y
+                    definitelyNoBeacons.Exclude(sensor.Position.X - exclusionMagnitude + 1,
+                        sensor.Position.X + exclusionMagnitude - 1);
+                }
             }
 
-            return -1;
+            foreach(var x in definitelyBeaconXValues)
+            {
+                definitelyNoBeacons.Include(x, x);
+            }
+
+            return definitelyNoBeacons.ExcludedCount;
+        }
+
+        public Point2d? FindUndetectedBeacon(int y, int minCoordinate, int maxCoordinate)
+        {
+            Debug.Assert(y >= minCoordinate && y <= maxCoordinate);
+
+            var rs = new RangeSet();
+            
+            foreach (var sensor in Sensors)
+            {
+                if (sensor.Position.Y == y)
+                {
+                    rs.Exclude(sensor.Position.X, sensor.Position.X);
+                }
+
+                var mdToClosestBeacon = sensor.Position.ManhattanDistance(sensor.ClosestBeacon);
+                var distanceToY = Math.Abs(sensor.Position.Y - y);
+
+                var exclusionMagnitude = mdToClosestBeacon - distanceToY + 1;
+                if (exclusionMagnitude <= 0)
+                {
+                    continue;
+                }
+
+                var excludeBottom = Math.Max(sensor.Position.X - exclusionMagnitude + 1, minCoordinate);
+                var excludeTop = Math.Min(sensor.Position.X + exclusionMagnitude - 1, maxCoordinate);
+
+                if (excludeBottom == minCoordinate && excludeTop == maxCoordinate)
+                {
+                    return null;
+                }
+
+                rs.Exclude(excludeBottom, excludeTop);
+            }
+
+            if (rs.ExcludedRangeCount == 1)
+            {
+                var excludedRange = rs.ExcludedRanges.Single();
+                if (excludedRange.bottom == minCoordinate && excludedRange.top == maxCoordinate)
+                {
+                    return null;
+                }
+
+                throw new NotImplementedException("need to figure out which end has it.");
+            }
+            else if (rs.ExcludedRangeCount == 2)
+            {
+                return new Point2d { X = rs.ExcludedRanges.First().top + 1, Y = y };
+            }
+            
+            throw new NotSupportedException($"There's some sort of error here.  There should only ever be 1 or 2 excluded ranges.  Found {rs.ExcludedRangeCount}.");
         }
 
         /// <summary>
@@ -102,9 +195,46 @@ namespace day15
             return count;
         }
 
+        public int CalculateCountOfPositionsWhereBeaconCanNotBePresentInRowUsingRangeset(int YValue)
+        {
+            throw new NotImplementedException("No longer used.");
+            //var rs = new RangeSet();
+            //foreach (var sensor in Sensors)
+            //{
+            //    var dist = sensor.Position.ManhattanDistance(sensor.ClosestBeacon);
+
+            //    if (Math.Abs(sensor.Position.Y - YValue) > dist)
+            //    {
+            //        // this sensor can not affect the row identified in YValue.
+            //        continue;
+            //    }
+
+            //    var excludabilityMagnitude = Math.Abs(sensor.Position.Y - dist - YValue);
+            //    rs.Exclude(sensor.Position.X - excludabilityMagnitude, sensor.Position.X + excludabilityMagnitude);
+            //}
+            
+            //return rs.ExcludedCount;
+        }
+
         public string GetAnswerForPart2()
         {
-            throw new NotImplementedException();
+            if (BeaconScanMinimumCoordinate == 0 && BeaconScanMaximumCoordinate == 0)
+            {
+                throw new NotSupportedException("The beacon scan min/max coordinates can't both be zero.");
+            }
+
+            string tuningFrequency = null;
+            Parallel.For(BeaconScanMinimumCoordinate, BeaconScanMaximumCoordinate, (y, loopState) =>
+            {
+                var result = FindUndetectedBeacon(y, BeaconScanMinimumCoordinate, BeaconScanMaximumCoordinate);
+                if (result is not null)
+                {
+                    tuningFrequency = (((long)result.X * 4_000_000) + result.Y).ToString();
+                    loopState.Stop();
+                }
+            });
+
+            return tuningFrequency ?? throw new ApplicationException("unable to find answer!");
         }
     }
 
@@ -253,7 +383,7 @@ namespace day15
 
         private static void TrimOverlappingInverse(SortedList<int, int> list, int bottom, int top)
         {
-            // this should binary search to find the right start point.
+            // TODO: this should binary search to find the right start point.
             for (var i = 0; i < list.Count; i++)
             {
                 var existingBottom = list.GetKeyAtIndex(i);
@@ -314,15 +444,16 @@ namespace day15
         {
             var mergeSuccess = false;
 
-            // this should binary search to find the right start point.
             for (var i = 0; i < list.Count; i++)
             {
+                // TODO: This should binary search to find the right start point.
                 var existingBottom = list.GetKeyAtIndex(i);
                 if (existingBottom > top)
                 {
                     // no need to search anymore.
                     break;
                 }
+
                 var existingTop = list[existingBottom];
                 if (existingTop < bottom)
                 {
@@ -340,7 +471,10 @@ namespace day15
                 {
                     // new range hangs below.  Need to replace this entry.
                     list.RemoveAt(i);
-                    list.Add(bottom, existingTop);
+                    if (!list.TryAdd(bottom, existingTop))
+                    {
+                        list[bottom] = Math.Max(existingTop, top);
+                    }
                     mergeSuccess = true;
                     continue;
                 }
@@ -354,14 +488,38 @@ namespace day15
                 else
                 {
                     Debug.Assert(bottom <= existingBottom && top >= existingTop);
-                    // this range totally overlaps, so we need a new entry.
+                    // the new range totally overlaps, so we can replace the existing entry.
                     list.RemoveAt(i);
-                    list.Add(bottom, top);
+                    if (!list.TryAdd(bottom, top))
+                    {
+                        list[bottom] = Math.Max(existingTop, top);
+                    }
                     mergeSuccess = true;
                     continue;
                 }
             }
+
+            if (mergeSuccess)
+            {
+                Compact(list);
+            }
+
             return mergeSuccess;
+        }
+
+        private static void Compact(SortedList<int, int> list)
+        {
+            for (var i = list.Count - 1; i >= 1; i--)
+            {
+                var currentBottom = list.GetKeyAtIndex(i);
+                var nextTop = list.GetValueAtIndex(i - 1);
+                if (currentBottom <= nextTop + 1)
+                {
+                    // need to consolidate.
+                    list[list.GetKeyAtIndex(i - 1)] = list.GetValueAtIndex(i);
+                    list.RemoveAt(i);
+                }
+            }
         }
 
         public void Exclude(int bottom, int top)
@@ -370,7 +528,6 @@ namespace day15
             {
                 throw new ArgumentException(message: "Argument top must be greater than or equal to bottom.");
             }
-
 
             if (!TryMergeIntoExisting(_excluded, bottom, top))
             {
@@ -382,6 +539,12 @@ namespace day15
 
         public int IncludedRangeCount => _included.Count;
         public int ExcludedRangeCount => _excluded.Count;
+
+        public int ExcludedCount => _excluded.Sum(kvp => kvp.Value - kvp.Key + 1);
+        public int IncludedCount => _included.Sum(kvp => kvp.Value - kvp.Key + 1);
+        public IEnumerable<(int bottom, int top)> ExcludedRanges => _excluded.Select(ex => (ex.Key, ex.Value));
+        public IEnumerable<(int bottom, int top)> IncludedRanges => _included.Select(ex => (ex.Key, ex.Value));
+
 
         public State GetState(int value)
         {

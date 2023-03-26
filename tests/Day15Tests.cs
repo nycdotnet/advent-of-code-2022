@@ -1,5 +1,4 @@
 ﻿using common;
-using day14;
 using day15;
 using FluentAssertions;
 using Xunit;
@@ -77,8 +76,45 @@ namespace tests
         public void Part1WithSampleInputProducesDocumentedResult()
         {
             var sut = new Day15(exampleInput1.Split('\n'));
+            sut.RowSearchYOffset = 10;
             sut.MarkAllBeaconAbsences();
-            sut.GetCountOfPositionsWhereBeaconCanNotBePresentInRow(10).Should().Be(26);
+            sut.GetCountOfPositionsWhereBeaconCanNotBePresentInRow(sut.RowSearchYOffset).Should().Be(26);
+        }
+
+        [Fact(Skip = "out of date implementation")]
+        public void Part1WithSampleInputProducesDocumentedResultUsingRangeSetImplementation()
+        {
+            var sut = new Day15(exampleInput1.Split('\n'));
+            
+            sut.CalculateCountOfPositionsWhereBeaconCanNotBePresentInRowUsingRangeset(10).Should().Be(26);
+        }
+
+        [Fact]
+        public void Part1WithSampleInputUsingNewImplementation()
+        {
+            var sut = new Day15(exampleInput1.Split('\n'));
+            sut.RowSearchYOffset = 10;
+            sut.GetAnswerForPart1().Should().Be("26");
+        }
+
+        [Fact]
+        public void Part2WithSampleInputUsingNewImplementation()
+        {
+            var sut = new Day15(exampleInput1.Split('\n'));
+            sut.BeaconScanMaximumCoordinate = 20;
+            sut.GetAnswerForPart2().Should().Be("56000011");
+        }
+
+        [Fact]
+        public void Part2WithActualInputProducesCorrectResult()
+        {
+            var input = Utils.GetResourceStringFromAssembly<Day15>("day15.input.txt")
+                .ReplaceLineEndings("\n")
+                .Split('\n');
+
+            var sut = new Day15(input);
+            sut.BeaconScanMaximumCoordinate = 4_000_000;
+            sut.GetAnswerForPart2().Should().Be("12518502636475");
         }
 
         [Fact]
@@ -301,7 +337,8 @@ namespace tests
                 .Split('\n');
 
             var sut = new Day15(input);
-            sut.GetAnswerForPart1().Should().Be("0");
+            sut.RowSearchYOffset = 2000000;
+            sut.GetAnswerForPart1().Should().Be("5127797");
         }
 
         [Fact]
