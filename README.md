@@ -95,7 +95,7 @@ OK I switched from parsing a new array each time to creating it in memory and it
 
 ### Day 14:
 
-Falling sand simulation - I did this one a while ago and don't have clear memories of it.  I do recall having a bug that didn't manifest with the test data which was pretty annoying, but proper limits testing eventually helped me figure it out.
+Falling sand simulation - I did this one a while ago and don't have clear memories of it.  I do recall having a bug that didn't manifest with the test data which was pretty annoying, but proper limits testing eventually helped me figure it out.  I used the [OneOf](https://www.nuget.org/packages/OneOf) library a lot on this one and it worked out pretty well.
 
 ### Day 15:
 
